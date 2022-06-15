@@ -19,6 +19,9 @@ import { WithdrawalService } from './withdrawal.service';
 import { Customer, CustomerSchema } from './schemas/customer.schema';
 import { CustomerController } from './customer.controller';
 import { CustomerService } from './customer.service';
+import { SettingController } from './setting.controller';
+import { SettingService } from './setting.service';
+import { Setting, SettingSchema } from './schemas/setting.schema';
 
 @Module({
   providers: [
@@ -26,12 +29,14 @@ import { CustomerService } from './customer.service';
     StakingApplicationService,
     WithdrawalService,
     CustomerService,
+    SettingService,
   ],
   controllers: [
     StakingOptionController,
     StakingApplicationController,
     WithdrawalController,
     CustomerController,
+    SettingController,
   ],
   imports: [
     MongooseModule.forFeature([
@@ -39,6 +44,7 @@ import { CustomerService } from './customer.service';
       { name: StakingApplication.name, schema: StakingApplicationSchema },
       { name: Withdrawal.name, schema: WithdrawalSchema },
       { name: Customer.name, schema: CustomerSchema },
+      { name: Setting.name, schema: SettingSchema },
     ]),
     AuthenticationModule,
   ],
