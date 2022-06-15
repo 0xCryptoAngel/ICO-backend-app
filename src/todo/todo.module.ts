@@ -19,6 +19,9 @@ import { StakingApplicationService } from './staking-application.service';
 import { Withdrawal, WithdrawalSchema } from './schemas/withdrawal.schema';
 import { WithdrawalController } from './withdrawal.controller';
 import { WithdrawalService } from './withdrawal.service';
+import { Customer, CustomerSchema } from './schemas/customer.schema';
+import { CustomerController } from './customer.controller';
+import { CustomerService } from './customer.service';
 
 @Module({
   providers: [
@@ -26,12 +29,14 @@ import { WithdrawalService } from './withdrawal.service';
     StakingOptionService,
     StakingApplicationService,
     WithdrawalService,
+    CustomerService,
   ],
   controllers: [
     TodoController,
     StakingOptionController,
     StakingApplicationController,
     WithdrawalController,
+    CustomerController,
   ],
   imports: [
     MongooseModule.forFeature([
@@ -39,6 +44,7 @@ import { WithdrawalService } from './withdrawal.service';
       { name: StakingOption.name, schema: StakingOptionSchema },
       { name: StakingApplication.name, schema: StakingApplicationSchema },
       { name: Withdrawal.name, schema: WithdrawalSchema },
+      { name: Customer.name, schema: CustomerSchema },
     ]),
     AuthenticationModule,
   ],
