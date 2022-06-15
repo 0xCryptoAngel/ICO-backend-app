@@ -50,8 +50,7 @@ export class AuthenticationService {
         password: hashedPassword,
       }).save();
     } catch (exception) {
-      console.log(exception.code);
-      if (exception.code) {
+      if (exception.code === 11000) {
         throw new HttpException(
           'User with that email already exists',
           HttpStatus.BAD_REQUEST,

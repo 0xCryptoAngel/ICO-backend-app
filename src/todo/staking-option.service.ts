@@ -32,12 +32,16 @@ export class StakingOptionService {
     updateStakingOptionDto: UpdateStakingOptionDto,
   ): Promise<StakingOption> {
     return await this.model
-      .findByIdAndUpdate(id, updateStakingOptionDto)
+      .findByIdAndUpdate(id, updateStakingOptionDto, { returnOriginal: false })
       .exec();
   }
   async delete(id: string): Promise<StakingOption> {
     return await this.model
-      .findByIdAndUpdate(id, { deleted_at: new Date() })
+      .findByIdAndUpdate(
+        id,
+        { deleted_at: new Date() },
+        { returnOriginal: false },
+      )
       .exec();
   }
 }

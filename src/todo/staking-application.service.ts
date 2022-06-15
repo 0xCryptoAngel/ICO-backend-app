@@ -32,7 +32,9 @@ export class StakingApplicationService {
     updateStakingApplicationDto: UpdateStakingApplicationDto,
   ): Promise<StakingApplication> {
     return await this.model
-      .findByIdAndUpdate(id, updateStakingApplicationDto)
+      .findByIdAndUpdate(id, updateStakingApplicationDto, {
+        returnOriginal: false,
+      })
       .exec();
   }
   // async delete(id: string): Promise<StakingApplication> {
@@ -43,7 +45,11 @@ export class StakingApplicationService {
 
   async confirm(id: string, is_confirmed: number): Promise<StakingApplication> {
     return await this.model
-      .findByIdAndUpdate(id, { is_confirmed: is_confirmed === 1 })
+      .findByIdAndUpdate(
+        id,
+        { is_confirmed: is_confirmed === 1 },
+        { returnOriginal: false },
+      )
       .exec();
   }
 }

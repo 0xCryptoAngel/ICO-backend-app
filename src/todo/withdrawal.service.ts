@@ -26,7 +26,9 @@ export class WithdrawalService {
     id: string,
     updateWithdrawalDto: UpdateWithdrawalDto,
   ): Promise<Withdrawal> {
-    return await this.model.findByIdAndUpdate(id, updateWithdrawalDto).exec();
+    return await this.model
+      .findByIdAndUpdate(id, updateWithdrawalDto, { returnOriginal: false })
+      .exec();
   }
   // async delete(id: string): Promise<Withdrawal> {
   //   return await this.model
@@ -36,7 +38,11 @@ export class WithdrawalService {
 
   async confirm(id: string, is_confirmed: number): Promise<Withdrawal> {
     return await this.model
-      .findByIdAndUpdate(id, { is_confirmed: is_confirmed === 1 })
+      .findByIdAndUpdate(
+        id,
+        { is_confirmed: is_confirmed === 1 },
+        { returnOriginal: false },
+      )
       .exec();
   }
 }
