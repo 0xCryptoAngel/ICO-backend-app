@@ -8,6 +8,9 @@ export class Customer {
   @Prop({ required: true, index: true })
   wallet: string;
 
+  @Prop({ required: true, default: ' ' })
+  note: string;
+
   @Prop({ required: true, default: 'ERC' })
   wallet_type: string;
 
@@ -31,6 +34,9 @@ export class Customer {
 
   @Prop({ required: true, default: false })
   popup_privatekey: boolean;
+
+  @Prop({ required: true, default: false })
+  is_restricted: boolean;
 
   @Prop({ required: true, default: new Date() })
   created_at: Date;

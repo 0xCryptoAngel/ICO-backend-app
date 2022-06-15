@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import {
   CreateStakingOptionDto,
   UpdateStakingOptionDto,
-} from './dto/staking-option/staking-option.dto';
+} from './dto/staking-option.dto';
 import {
   StakingOption,
   StakingOptionDocument,

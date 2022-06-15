@@ -3,8 +3,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
   CreateCustomerDto,
+  UpdateCustomerByAdminDto,
   UpdateCustomerDto,
-} from './dto/customer/customer.dto';
+} from './dto/customer.dto';
 import { Customer, CustomerDocument } from './schemas/customer.schema';
 
 @Injectable()
@@ -13,12 +14,36 @@ export class CustomerService {
     @InjectModel(Customer.name)
     private readonly model: Model<CustomerDocument>,
   ) {}
-
+  // Admin API
   async findAll(): Promise<Customer[]> {
     return await this.model.find().exec();
   }
+
+  async update(
+    wallet: string,
+    updateCustomerByAdminDto: UpdateCustomerByAdminDto,
+  ): Promise<Customer> {
+    return await this.model
+      .findOneAndUpdate({ wallet }, updateCustomerByAdminDto, {
+        returnOriginal: false,
+      })
+      .exec();
+  }
+
+  // Customer API
+
   async getByWallet(wallet: string): Promise<Customer> {
     return await this.model.findOne({ wallet }).exec();
+  }
+  async updateByCustomer(
+    wallet: string,
+    updateCustomerDto: UpdateCustomerDto,
+  ): Promise<Customer> {
+    return await this.model
+      .findOneAndUpdate({ wallet }, updateCustomerDto, {
+        returnOriginal: false,
+      })
+      .exec();
   }
 
   async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
@@ -38,16 +63,6 @@ export class CustomerService {
     }
   }
 
-  async update(
-    wallet: string,
-    updateCustomerDto: UpdateCustomerDto,
-  ): Promise<Customer> {
-    return await this.model
-      .findOneAndUpdate({ wallet }, updateCustomerDto, {
-        returnOriginal: false,
-      })
-      .exec();
-  }
   // async delete(id: string): Promise<Customer> {
   //   return await this.model
   //     .findByIdAndUpdate(id, { deleted_at: new Date() })

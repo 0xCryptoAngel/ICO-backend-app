@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import JwtAuthenticationGuard from './authentication/jwt-authentication.guard';
-import { CreateWithdrawalDto } from './dto/withdrawal/withdrawal.dto';
+import { CreateWithdrawalDto } from './dto/withdrawal.dto';
 import { WithdrawalService } from './withdrawal.service';
 
 @Controller('withdrawals')

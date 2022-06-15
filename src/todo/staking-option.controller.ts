@@ -12,7 +12,7 @@ import JwtAuthenticationGuard from './authentication/jwt-authentication.guard';
 import {
   CreateStakingOptionDto,
   UpdateStakingOptionDto,
-} from './dto/staking-option/staking-option.dto';
+} from './dto/staking-option.dto';
 import { StakingOptionService } from './staking-option.service';
 
 @Controller('staking-options')

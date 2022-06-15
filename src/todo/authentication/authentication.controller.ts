@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
-import { CreateUserDto } from '../dto/user/user.dto';
+import { CreateUserDto } from '../dto/user.dto';
 import { LocalAuthenticationGuard } from './localAuthentication.guard';
 import { RequestWithUser } from './authentication.interface';
 import { Response } from 'express';
