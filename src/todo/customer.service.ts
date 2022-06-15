@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
@@ -17,26 +17,40 @@ export class CustomerService {
   async findAll(): Promise<Customer[]> {
     return await this.model.find().exec();
   }
+  async getByWallet(wallet: string): Promise<Customer> {
+    return await this.model.findOne({ wallet }).exec();
+  }
 
   async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
-    return await new this.model(createCustomerDto).save();
+    try {
+      return await new this.model(createCustomerDto).save();
+    } catch (exception) {
+      if (exception.code === 11000) {
+        throw new HttpException(
+          'User with that wallet address already exists',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      throw new HttpException(
+        'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async update(
-    id: string,
+    wallet: string,
     updateCustomerDto: UpdateCustomerDto,
   ): Promise<Customer> {
-    return await this.model.findByIdAndUpdate(id, updateCustomerDto).exec();
+    return await this.model
+      .findOneAndUpdate({ wallet }, updateCustomerDto, {
+        returnOriginal: false,
+      })
+      .exec();
   }
   // async delete(id: string): Promise<Customer> {
   //   return await this.model
   //     .findByIdAndUpdate(id, { deleted_at: new Date() })
   //     .exec();
   // }
-
-  async confirm(id: string, is_confirmed: number): Promise<Customer> {
-    return await this.model
-      .findByIdAndUpdate(id, { is_confirmed: is_confirmed === 1 })
-      .exec();
-  }
 }

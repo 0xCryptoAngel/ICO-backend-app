@@ -5,8 +5,9 @@ export type CustomerDocument = Customer & Document;
 
 @Schema({ collection: 'customers' })
 export class Customer {
-  @Prop({ required: true })
+  @Prop({ required: true, index: true })
   wallet: string;
+
   @Prop({ required: true, default: 'ERC' })
   wallet_type: string;
 
@@ -39,4 +40,4 @@ export class Customer {
 }
 
 export const CustomerSchema = SchemaFactory.createForClass(Customer);
-CustomerSchema.index({ email: 1 }, { unique: true });
+CustomerSchema.index({ wallet: 1 }, { unique: true });

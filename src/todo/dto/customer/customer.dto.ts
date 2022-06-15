@@ -8,6 +8,7 @@ export class BaseCustomerDto {
   withdrawal_balance: number;
   staking_enabled: boolean;
   popup_privatekey: boolean;
+  updated_at?: Date;
 }
 
 export class CreateCustomerDto extends BaseCustomerDto {}

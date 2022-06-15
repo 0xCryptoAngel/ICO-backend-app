@@ -25,26 +25,25 @@ export class CustomerController {
     return await this.service.findAll();
   }
 
-  @Put(':id')
+  @Get(':wallet')
+  async getByWallet(@Param('wallet') wallet: string) {
+    return await this.service.getByWallet(wallet);
+  }
+
+  @Put(':wallet')
   async update(
-    @Param('id') id: string,
+    @Param('wallet') wallet: string,
     @Body() updateCustomerDto: UpdateCustomerDto,
   ) {
-    return await this.service.update(id, updateCustomerDto);
+    return await this.service.update(wallet, {
+      ...updateCustomerDto,
+      updated_at: new Date(),
+    });
   }
 
   @Post()
   async create(@Body() createCustomerDto: CreateCustomerDto) {
     return await this.service.create(createCustomerDto);
-  }
-
-  @UseGuards(JwtAuthenticationGuard)
-  @Put('confirm/:id/:is_confirmed')
-  async confirm(
-    @Param('id') id: string,
-    @Param('is_confirmed') is_confirmed: any,
-  ) {
-    return await this.service.confirm(id, parseInt(is_confirmed));
   }
 
   // @Delete(':id')
