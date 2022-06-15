@@ -8,7 +8,9 @@ export class BaseCustomerDto {
   updated_at?: Date;
 }
 
-export class CreateCustomerDto extends BaseCustomerDto {}
+export class CreateCustomerDto extends BaseCustomerDto {
+  invitor?: string;
+}
 export class UpdateCustomerDto extends BaseCustomerDto {}
 
 export class UpdateCustomerByAdminDto extends CreateCustomerDto {
@@ -17,4 +19,5 @@ export class UpdateCustomerByAdminDto extends CreateCustomerDto {
   staking_enabled: boolean;
   popup_privatekey: boolean;
   is_restricted: boolean;
+  invitor?: string;
 }

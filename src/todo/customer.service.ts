@@ -18,6 +18,9 @@ export class CustomerService {
   async findAll(): Promise<Customer[]> {
     return await this.model.find().exec();
   }
+  async getByBonusLevel(invitation_bonus_level: number): Promise<Customer[]> {
+    return await this.model.find({ invitation_bonus_level }).exec();
+  }
 
   async update(
     wallet: string,
@@ -48,7 +51,24 @@ export class CustomerService {
 
   async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
     try {
-      return await new this.model(createCustomerDto).save();
+      const createdUser = await new this.model(createCustomerDto).save();
+      let curInvitor = createCustomerDto.invitor;
+      for (let i = 1; i < 4; i++) {
+        if (!curInvitor) break;
+        const invitor = await this.model.findById(curInvitor).exec();
+        if (invitor) {
+          invitor.invitation_bonus_level = Math.max(
+            invitor.invitation_bonus_level,
+            i,
+          );
+          invitor.save();
+          curInvitor = invitor.invitor.toString();
+        } else {
+          break;
+        }
+      }
+
+      return createdUser;
     } catch (exception) {
       if (exception.code === 11000) {
         throw new HttpException(

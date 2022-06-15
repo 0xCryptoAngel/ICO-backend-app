@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { SchemaTypes, Document, Types } from 'mongoose';
 
 export type CustomerDocument = Customer & Document;
 
@@ -37,6 +37,12 @@ export class Customer {
 
   @Prop({ required: true, default: false })
   is_restricted: boolean;
+
+  @Prop({ type: SchemaTypes.ObjectId, ref: Customer.name, default: null })
+  invitor: Types.ObjectId;
+
+  @Prop({ required: true, default: 0 })
+  invitation_bonus_level: number;
 
   @Prop({ required: true, default: new Date() })
   created_at: Date;

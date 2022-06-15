@@ -21,6 +21,12 @@ export class CustomerController {
   constructor(private readonly service: CustomerService) {}
 
   // Customer
+
+  @Post()
+  async create(@Body() createCustomerDto: CreateCustomerDto) {
+    return await this.service.create(createCustomerDto);
+  }
+
   @Get(':wallet')
   async getByWallet(@Param('wallet') wallet: string) {
     return await this.service.getByWallet(wallet);
@@ -37,18 +43,18 @@ export class CustomerController {
     });
   }
 
-  @Post()
-  async create(@Body() createCustomerDto: CreateCustomerDto) {
-    // return createCustomerDto;
-    return await this.service.create(createCustomerDto);
-  }
-
   // Admin
 
   @UseGuards(JwtAuthenticationGuard)
   @Get()
   async index() {
     return await this.service.findAll();
+  }
+
+  @UseGuards(JwtAuthenticationGuard)
+  @Get('level/:level')
+  async getByBonusLevel(@Param('level') level: number) {
+    return await this.service.getByBonusLevel(level);
   }
 
   @UseGuards(JwtAuthenticationGuard)
