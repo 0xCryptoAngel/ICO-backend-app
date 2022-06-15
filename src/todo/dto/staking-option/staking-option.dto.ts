@@ -3,7 +3,8 @@ export class StakingOptionDto {
   endAmount: number;
   starkingReward: Array<{
     duration: number;
-    rewardRate: number;
+    minRewardRate: number;
+    maxRewardRate: number;
   }>;
   descriptions: Array<string>;
 }

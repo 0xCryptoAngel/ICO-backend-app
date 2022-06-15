@@ -14,11 +14,15 @@ export class StakingOption {
   @Prop({ required: true, default: [] })
   starkingReward: Array<{
     duration: number;
-    rewardRate: number;
+    minRewardRate: number;
+    maxRewardRate: number;
   }>;
 
   @Prop({ required: true, default: [] })
   descriptions: Array<string>;
+
+  @Prop({ default: null })
+  deleted_at: Date;
 }
 
 export const StakingOptionSchema = SchemaFactory.createForClass(StakingOption);
