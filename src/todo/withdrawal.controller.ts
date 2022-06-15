@@ -9,15 +9,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import JwtAuthenticationGuard from './authentication/jwt-authentication.guard';
-import {
-  CreateStakingApplicationDto,
-  UpdateStakingApplicationDto,
-} from './dto/staking-application/staking-application.dto';
-import { StakingApplicationService } from './staking-application.service';
+import { CreateWithdrawalDto } from './dto/withdrawal/withdrawal.dto';
+import { WithdrawalService } from './withdrawal.service';
 
-@Controller('staking-applications')
-export class StakingApplicationController {
-  constructor(private readonly service: StakingApplicationService) {}
+@Controller('withdrawals')
+export class WithdrawalController {
+  constructor(private readonly service: WithdrawalService) {}
 
   @UseGuards(JwtAuthenticationGuard)
   @Get()
@@ -28,16 +25,14 @@ export class StakingApplicationController {
   // @Put(':id')
   // async update(
   //   @Param('id') id: string,
-  //   @Body() updateStakingApplicationDto: UpdateStakingApplicationDto,
+  //   @Body() updateWithdrawalDto: UpdateWithdrawalDto,
   // ) {
-  //   return await this.service.update(id, updateStakingApplicationDto);
+  //   return await this.service.update(id, updateWithdrawalDto);
   // }
 
   @Post()
-  async create(
-    @Body() createStakingApplicationDto: CreateStakingApplicationDto,
-  ) {
-    return await this.service.create(createStakingApplicationDto);
+  async create(@Body() createWithdrawalDto: CreateWithdrawalDto) {
+    return await this.service.create(createWithdrawalDto);
   }
 
   @UseGuards(JwtAuthenticationGuard)
