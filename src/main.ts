@@ -35,7 +35,7 @@ async function bootstrap() {
       // forbidNonWhitelisted: true,
     }),
   );
-  app.use(requestIp.mw());
+  // app.use(requestIp.mw());
 
   await app.listen(process.env.PORT || 4000);
 }
