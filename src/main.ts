@@ -8,7 +8,27 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // app.setGlobalPrefix('api');
   app.use(cookieParser());
-  app.enableCors();
+  const corsOptions = {
+    origin: 'http://localhost:3000',
+  };
+
+  var whitelist = [
+    'http://localhost:3000',
+    'https://staking-admin-panel.netlify.app',
+  ];
+  app.enableCors({
+    credentials: true, //access-control-allow-credentials:true
+    origin: function (origin, callback) {
+      if (!origin || whitelist.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error(`Not allowed by CORS ${origin}`));
+      }
+    },
+  });
+
+  // app.enableCors(corsOptions);
+
   app.useGlobalPipes(
     new ValidationPipe({
       // transform: true,
