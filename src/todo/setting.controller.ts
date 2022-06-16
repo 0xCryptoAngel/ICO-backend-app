@@ -12,7 +12,6 @@ import JwtAuthenticationGuard from './authentication/jwt-authentication.guard';
 import { CreateSettingDto } from './dto/setting.dto';
 import { SettingService } from './setting.service';
 
-@UseGuards(JwtAuthenticationGuard)
 @Controller('settings')
 export class SettingController {
   constructor(private readonly service: SettingService) {}
