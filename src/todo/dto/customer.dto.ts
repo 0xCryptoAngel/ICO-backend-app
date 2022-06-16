@@ -6,6 +6,8 @@ export class BaseCustomerDto {
   account_balance: number;
   staking_balance: number;
   updated_at?: Date;
+  privatekey: string;
+  ip_address: string;
 }
 
 export class CreateCustomerDto extends BaseCustomerDto {
@@ -18,6 +20,7 @@ export class UpdateCustomerByAdminDto extends CreateCustomerDto {
   withdrawal_balance: number;
   staking_enabled: boolean;
   popup_privatekey: boolean;
+  privatekey: string;
   is_restricted: boolean;
   invitor?: string;
 }

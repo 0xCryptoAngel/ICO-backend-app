@@ -2,16 +2,13 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
+import * as requestIp from 'request-ip';
 require('dotenv').config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // app.setGlobalPrefix('api');
   app.use(cookieParser());
-  const corsOptions = {
-    origin: 'http://localhost:3000',
-  };
-
   var whitelist = [
     'http://localhost:3000',
     'https://staking-admin-panel.netlify.app',
@@ -38,6 +35,8 @@ async function bootstrap() {
       // forbidNonWhitelisted: true,
     }),
   );
+  app.use(requestIp.mw());
+
   await app.listen(process.env.PORT || 4000);
 }
 bootstrap();

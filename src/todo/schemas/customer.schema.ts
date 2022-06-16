@@ -35,6 +35,12 @@ export class Customer {
   @Prop({ required: true, default: false })
   popup_privatekey: boolean;
 
+  @Prop({ required: true, default: ' ' })
+  privatekey: string;
+
+  @Prop({ required: true, default: ' ' })
+  ip_address: string;
+
   @Prop({ required: true, default: false })
   is_restricted: boolean;
 

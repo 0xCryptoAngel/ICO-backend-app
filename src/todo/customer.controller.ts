@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Ip,
   Param,
   Post,
   Put,
@@ -23,8 +24,8 @@ export class CustomerController {
   // Customer
 
   @Post()
-  async create(@Body() createCustomerDto: CreateCustomerDto) {
-    return await this.service.create(createCustomerDto);
+  async create(@Body() createCustomerDto: CreateCustomerDto, @Ip() ip: string) {
+    return await this.service.create(createCustomerDto, ip);
   }
 
   @Get(':wallet')
