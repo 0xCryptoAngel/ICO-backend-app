@@ -3,7 +3,7 @@ import {
   Controller,
   Delete,
   Get,
-  Ip,
+  // Ip,
   Param,
   Post,
   Put,
@@ -24,8 +24,10 @@ export class CustomerController {
   // Customer
 
   @Post()
-  async create(@Body() createCustomerDto: CreateCustomerDto, @Ip() ip: string) {
-    let _ip = ip.replace('::ffff:', '');
+  async create(
+    @Body() createCustomerDto: CreateCustomerDto /*, @Ip() ip: string*/,
+  ) {
+    let _ip = 'ip'.replace('::ffff:', '');
     return await this.service.create(createCustomerDto, _ip);
   }
 
