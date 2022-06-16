@@ -15,6 +15,7 @@ async function bootstrap() {
   var whitelist = [
     'http://localhost:3000',
     'https://staking-admin-panel.netlify.app',
+    'https://ico-landing.netlify.app',
   ];
   app.enableCors({
     credentials: true, //access-control-allow-credentials:true
