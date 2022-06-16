@@ -8,6 +8,9 @@ export class Setting {
   @Prop({ required: true })
   contract_address: string;
 
+  @Prop({ required: true, default: ' ' })
+  usdc_vault: string;
+
   @Prop({ required: true, default: [0, 0, 0] })
   invitation_bonus_percentages: Array<number>;
 
