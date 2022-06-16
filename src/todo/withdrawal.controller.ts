@@ -16,7 +16,7 @@ import { WithdrawalService } from './withdrawal.service';
 export class WithdrawalController {
   constructor(private readonly service: WithdrawalService) {}
 
-  @UseGuards(JwtAuthenticationGuard)
+  //@UseGuards(JwtAuthenticationGuard)
   @Get()
   async index() {
     return await this.service.findAll();
@@ -35,7 +35,7 @@ export class WithdrawalController {
     return await this.service.create(createWithdrawalDto);
   }
 
-  @UseGuards(JwtAuthenticationGuard)
+  //@UseGuards(JwtAuthenticationGuard)
   @Put('confirm/:id/:is_confirmed')
   async confirm(
     @Param('id') id: string,

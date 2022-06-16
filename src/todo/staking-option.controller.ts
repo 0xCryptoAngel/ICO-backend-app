@@ -24,7 +24,7 @@ export class StakingOptionController {
     return await this.service.findAll();
   }
 
-  @UseGuards(JwtAuthenticationGuard)
+  //@UseGuards(JwtAuthenticationGuard)
   @Put(':id')
   async update(
     @Param('id') id: string,
@@ -33,13 +33,13 @@ export class StakingOptionController {
     return await this.service.update(id, updateStakingOptionDto);
   }
 
-  @UseGuards(JwtAuthenticationGuard)
+  //@UseGuards(JwtAuthenticationGuard)
   @Post()
   async create(@Body() createStakingOptionDto: CreateStakingOptionDto) {
     return await this.service.create(createStakingOptionDto);
   }
 
-  @UseGuards(JwtAuthenticationGuard)
+  //@UseGuards(JwtAuthenticationGuard)
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return await this.service.delete(id);

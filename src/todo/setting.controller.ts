@@ -21,7 +21,7 @@ export class SettingController {
     return await this.service.findOne();
   }
 
-  @UseGuards(JwtAuthenticationGuard)
+  //@UseGuards(JwtAuthenticationGuard)
   @Post()
   async findAndUpdate(@Body() createSettingDto: CreateSettingDto) {
     return await this.service.findAndUpdate(createSettingDto);

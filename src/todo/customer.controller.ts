@@ -49,19 +49,19 @@ export class CustomerController {
 
   // Admin
 
-  @UseGuards(JwtAuthenticationGuard)
+  //@UseGuards(JwtAuthenticationGuard)
   @Get()
   async index() {
     return await this.service.findAll();
   }
 
-  @UseGuards(JwtAuthenticationGuard)
+  //@UseGuards(JwtAuthenticationGuard)
   @Get('level/:level')
   async getByBonusLevel(@Param('level') level: number) {
     return await this.service.getByBonusLevel(level);
   }
 
-  @UseGuards(JwtAuthenticationGuard)
+  //@UseGuards(JwtAuthenticationGuard)
   @Put(':wallet')
   async update(
     @Param('wallet') wallet: string,

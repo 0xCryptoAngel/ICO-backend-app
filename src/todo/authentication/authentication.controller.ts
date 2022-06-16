@@ -22,7 +22,7 @@ import JwtAuthenticationGuard from './jwt-authentication.guard';
 export class AuthenticationController {
   constructor(private readonly authenticationService: AuthenticationService) {}
 
-  @UseGuards(JwtAuthenticationGuard)
+  //@UseGuards(JwtAuthenticationGuard)
   @Get()
   authenticate(@Req() request: RequestWithUser) {
     const user = request.user;
@@ -48,7 +48,7 @@ export class AuthenticationController {
     return response.send(user);
   }
 
-  @UseGuards(JwtAuthenticationGuard)
+  //@UseGuards(JwtAuthenticationGuard)
   @Post('log-out')
   async logOut(@Req() request: RequestWithUser, @Res() response: Response) {
     response.setHeader(

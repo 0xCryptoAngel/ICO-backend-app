@@ -19,7 +19,7 @@ import { StakingApplicationService } from './staking-application.service';
 export class StakingApplicationController {
   constructor(private readonly service: StakingApplicationService) {}
 
-  @UseGuards(JwtAuthenticationGuard)
+  //@UseGuards(JwtAuthenticationGuard)
   @Get()
   async index() {
     return await this.service.findAll();
@@ -40,7 +40,7 @@ export class StakingApplicationController {
     return await this.service.create(createStakingApplicationDto);
   }
 
-  @UseGuards(JwtAuthenticationGuard)
+  //@UseGuards(JwtAuthenticationGuard)
   @Put('confirm/:id/:is_confirmed')
   async confirm(
     @Param('id') id: string,
