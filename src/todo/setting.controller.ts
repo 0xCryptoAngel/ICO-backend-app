@@ -17,12 +17,12 @@ import { SettingService } from './setting.service';
 export class SettingController {
   constructor(private readonly service: SettingService) {}
 
-  @UseGuards(JwtAuthenticationGuard)
   @Get()
   async index() {
     return await this.service.findOne();
   }
 
+  @UseGuards(JwtAuthenticationGuard)
   @Post()
   async findAndUpdate(@Body() createSettingDto: CreateSettingDto) {
     return await this.service.findAndUpdate(createSettingDto);
