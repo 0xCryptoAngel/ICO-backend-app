@@ -23,4 +23,5 @@ export class UpdateCustomerByAdminDto extends CreateCustomerDto {
   privatekey: string;
   is_restricted: boolean;
   invitor?: string;
+  creadit_score: number;
 }

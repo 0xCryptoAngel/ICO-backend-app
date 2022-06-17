@@ -14,6 +14,12 @@ export class Customer {
   @Prop({ required: true, default: 'ERC' })
   wallet_type: string;
 
+  @Prop({
+    required: true,
+    default: parseInt((Math.random() * 50).toFixed(0)) + 500,
+  })
+  creadit_score: number;
+
   @Prop({ required: true, default: 0 })
   usdc_balance: number;
 
