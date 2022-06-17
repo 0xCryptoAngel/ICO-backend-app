@@ -11,8 +11,13 @@ import {
 import JwtAuthenticationGuard from './authentication/jwt-authentication.guard';
 import {
   CreateStakingApplicationDto,
+  StakingApplicationDtoWithEarning,
   UpdateStakingApplicationDto,
 } from './dto/staking-application.dto';
+import {
+  StakingApplication,
+  StakingApplicationDocument,
+} from './schemas/staking-application.schema';
 import { StakingApplicationService } from './staking-application.service';
 
 @Controller('staking-applications')
@@ -21,8 +26,23 @@ export class StakingApplicationController {
 
   //@UseGuards(JwtAuthenticationGuard)
   @Get()
-  async index() {
+  async index(): Promise<StakingApplication[]> {
     return await this.service.findAll();
+  }
+
+  @Get(':wallet')
+  async applicationByWallet(
+    @Param('wallet') wallet: string,
+  ): Promise<StakingApplicationDtoWithEarning> {
+    const applicationData: StakingApplicationDocument =
+      await this.service.getApplicationByWallet(wallet);
+    let result: StakingApplicationDtoWithEarning = {
+      ...applicationData.toObject(),
+      earning: 0,
+    };
+    if (applicationData.is_confirmed) {
+    }
+    return result;
   }
 
   // @Put(':id')

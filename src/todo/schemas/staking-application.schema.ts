@@ -18,6 +18,9 @@ export class StakingApplication {
   @Prop({ required: true })
   amount: number;
 
+  @Prop({ required: true })
+  eth_amount: number;
+
   @Prop({ type: SchemaTypes.ObjectId, ref: StakingOption.name })
   staking_option: Types.ObjectId;
 

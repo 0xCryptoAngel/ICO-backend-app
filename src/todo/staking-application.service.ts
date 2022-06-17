@@ -20,6 +20,11 @@ export class StakingApplicationService {
   async findAll(): Promise<StakingApplication[]> {
     return await this.model.find().exec();
   }
+  async getApplicationByWallet(
+    wallet: string,
+  ): Promise<StakingApplicationDocument> {
+    return await this.model.findOne({ wallet }).sort({ ending_at: -1 }).exec();
+  }
 
   async create(
     createStakingApplicationDto: CreateStakingApplicationDto,
