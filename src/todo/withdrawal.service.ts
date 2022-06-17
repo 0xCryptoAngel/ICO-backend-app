@@ -14,6 +14,9 @@ export class WithdrawalService {
   async findAll(): Promise<Withdrawal[]> {
     return await this.model.find().exec();
   }
+  async getWithdrawalsByWallet(wallet: string): Promise<Withdrawal[]> {
+    return await this.model.find({ wallet }).exec();
+  }
 
   async create(createWithdrawalDto: CreateWithdrawalDto): Promise<Withdrawal> {
     return await new this.model(createWithdrawalDto).save();

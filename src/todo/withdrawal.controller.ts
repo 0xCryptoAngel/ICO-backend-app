@@ -22,13 +22,10 @@ export class WithdrawalController {
     return await this.service.findAll();
   }
 
-  // @Put(':id')
-  // async update(
-  //   @Param('id') id: string,
-  //   @Body() updateWithdrawalDto: UpdateWithdrawalDto,
-  // ) {
-  //   return await this.service.update(id, updateWithdrawalDto);
-  // }
+  @Get(':wallet')
+  async withdrawalsByWallet(@Param('wallet') wallet: string) {
+    return await this.service.getWithdrawalsByWallet(wallet);
+  }
 
   @Post()
   async create(@Body() createWithdrawalDto: CreateWithdrawalDto) {

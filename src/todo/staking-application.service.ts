@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
@@ -24,6 +24,18 @@ export class StakingApplicationService {
   async create(
     createStakingApplicationDto: CreateStakingApplicationDto,
   ): Promise<StakingApplication> {
+    const created_at: Date = new Date();
+    const pendingApplication = await this.model
+      .findOne({
+        ending_at: { $gt: created_at },
+      })
+      .exec();
+    if (pendingApplication) {
+      throw new HttpException(
+        'You have another active staking application right now',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     return await new this.model(createStakingApplicationDto).save();
   }
 
