@@ -42,7 +42,10 @@ export class StakingApplicationController {
     };
     if (applicationData.is_confirmed) {
       const timespent: number =
-        new Date().getTime() - new Date(applicationData.created_at).getTime();
+        Math.min(
+          new Date(applicationData.ending_at).getTime(),
+          new Date().getTime(),
+        ) - new Date(applicationData.created_at).getTime();
       const coupleHours =
         (timespent - (timespent % (2 * 3600 * 1000))) / (2 * 3600 * 1000);
       result.earning =
