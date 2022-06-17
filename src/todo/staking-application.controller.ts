@@ -44,14 +44,12 @@ export class StakingApplicationController {
       const timespent: number =
         new Date().getTime() - new Date(applicationData.created_at).getTime();
       const coupleHours =
-        ((timespent - (timespent % (2 * 3600 * 1000))) / 2) * 3600 * 1000;
-      console.log(timespent, coupleHours);
-
+        (timespent - (timespent % (2 * 3600 * 1000))) / (2 * 3600 * 1000);
       result.earning =
-        (applicationData.reward_rate *
+        ((applicationData.reward_rate / 100) *
           applicationData.eth_amount *
           coupleHours) /
-        6;
+        12;
     }
     return result;
   }
