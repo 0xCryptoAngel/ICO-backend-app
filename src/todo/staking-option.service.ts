@@ -21,6 +21,10 @@ export class StakingOptionService {
     return await this.model.find().exec();
   }
 
+  async findById(id: string): Promise<StakingOption> {
+    return await this.model.findById(id).exec();
+  }
+
   async create(
     createStakingOptionDto: CreateStakingOptionDto,
   ): Promise<StakingOption> {

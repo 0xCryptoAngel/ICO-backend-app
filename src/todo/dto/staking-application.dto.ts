@@ -4,6 +4,7 @@ export class StakingApplicationDto {
   created_at: Date;
   ending_at: Date;
   wallet: string;
+  reward_rate: number;
   amount: number;
   eth_amount: number;
   staking_option: Types.ObjectId;

@@ -23,7 +23,16 @@ export class StakingApplicationService {
   async getApplicationByWallet(
     wallet: string,
   ): Promise<StakingApplicationDocument> {
-    return await this.model.findOne({ wallet }).sort({ ending_at: -1 }).exec();
+    const result = await this.model
+      .findOne({ wallet })
+      .sort({ ending_at: -1 })
+      .exec();
+    if (result === null)
+      throw new HttpException(
+        'Any active staking application for you',
+        HttpStatus.NOT_FOUND,
+      );
+    return result;
   }
 
   async create(

@@ -16,6 +16,9 @@ export class StakingApplication {
   wallet: string;
 
   @Prop({ required: true })
+  reward_rate: number;
+
+  @Prop({ required: true })
   amount: number;
 
   @Prop({ required: true })
