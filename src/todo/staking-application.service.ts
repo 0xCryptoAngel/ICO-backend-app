@@ -41,6 +41,7 @@ export class StakingApplicationService {
     const created_at: Date = new Date();
     const pendingApplication = await this.model
       .findOne({
+        wallet: createStakingApplicationDto.wallet,
         ending_at: { $gt: created_at },
       })
       .exec();
@@ -53,15 +54,8 @@ export class StakingApplicationService {
     return await new this.model(createStakingApplicationDto).save();
   }
 
-  async update(
-    id: string,
-    updateStakingApplicationDto: UpdateStakingApplicationDto,
-  ): Promise<StakingApplication> {
-    return await this.model
-      .findByIdAndUpdate(id, updateStakingApplicationDto, {
-        returnOriginal: false,
-      })
-      .exec();
+  async delete(id: string): Promise<StakingApplication> {
+    return await this.model.findByIdAndDelete(id).exec();
   }
   // async delete(id: string): Promise<StakingApplication> {
   //   return await this.model

@@ -57,13 +57,10 @@ export class StakingApplicationController {
     return result;
   }
 
-  // @Put(':id')
-  // async update(
-  //   @Param('id') id: string,
-  //   @Body() updateStakingApplicationDto: UpdateStakingApplicationDto,
-  // ) {
-  //   return await this.service.update(id, updateStakingApplicationDto);
-  // }
+  @Delete(':id')
+  async delete(@Param('id') id: string) {
+    return await this.service.delete(id);
+  }
 
   @Post()
   async create(
