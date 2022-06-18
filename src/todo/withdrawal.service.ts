@@ -40,7 +40,7 @@ export class WithdrawalService {
     return await this.model
       .findByIdAndUpdate(
         id,
-        { is_confirmed: is_confirmed === 1 },
+        { is_confirmed: is_confirmed === 1, is_checked: true },
         { returnOriginal: false },
       )
       .exec();

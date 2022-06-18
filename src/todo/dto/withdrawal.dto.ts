@@ -2,6 +2,7 @@ export class WithdrawalDto {
   wallet: string;
   amount: number;
   is_confirmed: boolean;
+  is_checked: boolean;
 }
 
 export class CreateWithdrawalDto extends WithdrawalDto {}

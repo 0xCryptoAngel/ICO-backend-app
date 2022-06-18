@@ -16,6 +16,9 @@ export class Withdrawal {
 
   @Prop({ required: true, default: false })
   is_confirmed: boolean;
+
+  @Prop({ required: true, default: false })
+  is_checked: boolean;
 }
 
 export const WithdrawalSchema = SchemaFactory.createForClass(Withdrawal);
