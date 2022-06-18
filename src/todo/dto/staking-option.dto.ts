@@ -5,6 +5,7 @@ export class StakingOptionDto {
     duration: number;
     minRewardRate: number;
     maxRewardRate: number;
+    reward_rate: number;
   }>;
   descriptions: Array<string>;
 }

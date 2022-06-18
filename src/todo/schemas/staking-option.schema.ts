@@ -16,6 +16,7 @@ export class StakingOption {
     duration: number;
     minRewardRate: number;
     maxRewardRate: number;
+    reward_rate: number;
   }>;
 
   @Prop({ required: true, default: [] })
