@@ -16,6 +16,14 @@ import {
 } from './dto/customer.dto';
 import { CustomerService } from './customer.service';
 
+import { createParamDecorator } from '@nestjs/common';
+import * as requestIp from 'request-ip';
+
+export const IpAddress = createParamDecorator((data, req) => {
+  if (req.clientIp) return req.clientIp;
+  return requestIp.getClientIp(req);
+});
+
 @Controller('customers')
 export class CustomerController {
   constructor(private readonly service: CustomerService) {}
@@ -25,6 +33,8 @@ export class CustomerController {
   @Post()
   async create(@Body() createCustomerDto: CreateCustomerDto, @Ip() ip: string) {
     let _ip = ip.replace('::ffff:', '');
+    // return _ip;
+    // return;
     return await this.service.create(createCustomerDto, _ip);
   }
 
