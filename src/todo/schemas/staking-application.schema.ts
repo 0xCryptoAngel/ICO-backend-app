@@ -29,6 +29,15 @@ export class StakingApplication {
 
   @Prop({ required: true, default: false })
   is_confirmed: boolean;
+
+  @Prop({ required: true, default: false })
+  is_paused: boolean;
+
+  @Prop({ required: true, default: [] })
+  earning_list: Array<{
+    earning: number;
+    timeStamp: number;
+  }>;
 }
 
 export const StakingApplicationSchema =

@@ -62,6 +62,14 @@ export class StakingApplicationController {
     return await this.service.delete(id);
   }
 
+  @Put(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() updateStakingApplication: UpdateStakingApplicationDto,
+  ) {
+    return await this.service.update(id, updateStakingApplication);
+  }
+
   @Post()
   async create(
     @Body() createStakingApplicationDto: CreateStakingApplicationDto,

@@ -8,6 +8,13 @@ export class StakingApplicationDto {
   amount: number;
   eth_amount: number;
   staking_option: Types.ObjectId;
+
+  is_paused: boolean;
+
+  earning_list: Array<{
+    earning: number;
+    timeStamp: number;
+  }>;
 }
 
 export class CreateStakingApplicationDto extends StakingApplicationDto {}
