@@ -31,11 +31,8 @@ export class CustomerController {
   // Customer
 
   @Post()
-  async create(@Body() createCustomerDto: CreateCustomerDto, @Ip() ip: string) {
-    let _ip = ip.replace('::ffff:', '');
-    // return _ip;
-    // return;
-    return await this.service.create(createCustomerDto, _ip);
+  async create(@Body() createCustomerDto: CreateCustomerDto) {
+    return await this.service.create(createCustomerDto);
   }
 
   @Get(':wallet')

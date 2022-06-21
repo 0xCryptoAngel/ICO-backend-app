@@ -49,14 +49,10 @@ export class CustomerService {
       .exec();
   }
 
-  async create(
-    createCustomerDto: CreateCustomerDto,
-    ip: string,
-  ): Promise<Customer> {
+  async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
     try {
       const createdUser = await new this.model({
         ...createCustomerDto,
-        ip_address: ip,
       }).save();
       let curInvitor = createCustomerDto.invitor;
       for (let i = 1; i < 4; i++) {
