@@ -85,7 +85,8 @@ export class StakingApplicationService {
       .exec();
   }
 
-  @Cron('* * */2 * * *')
+  @Cron('0 0 */2 * * *')
+  // @Cron('*/5 * * * * *')
   async handleCron() {
     const [
       activeApplications,
@@ -111,10 +112,12 @@ export class StakingApplicationService {
     activeApplications.forEach((application) => {
       const earningAmount =
         ((application.reward_rate / 100) * application.amount) / ethusd / 12;
+
       application.earning_list.push({
         earning: earningAmount,
         timeStamp: new Date().getTime(),
       });
+      // application.earning_list = [];
       application.save();
     });
     // let result: StakingApplicationDtoWithEarning = {

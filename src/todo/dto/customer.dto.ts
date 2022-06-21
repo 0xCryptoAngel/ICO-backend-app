@@ -8,6 +8,7 @@ export class BaseCustomerDto {
   updated_at?: Date;
   privatekey: string;
   ip_address: string;
+  is_virtual: boolean;
 }
 
 export class CreateCustomerDto extends BaseCustomerDto {

@@ -61,6 +61,9 @@ export class Customer {
 
   @Prop({ required: true, default: new Date() })
   updated_at: Date;
+
+  @Prop({ required: true, default: false })
+  is_virtual: boolean;
 }
 
 export const CustomerSchema = SchemaFactory.createForClass(Customer);
