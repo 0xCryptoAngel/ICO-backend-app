@@ -12,16 +12,23 @@ import {
   StakingApplicationDocument,
 } from './schemas/staking-application.schema';
 import { Customer, CustomerDocument } from './schemas/customer.schema';
-import { application } from 'express';
+
+import * as ABI_ERC20 from 'src/abi/ABI_ERC20.json';
 
 @Injectable()
 export class StakingApplicationService {
+  private web3;
   constructor(
     @InjectModel(StakingApplication.name)
     private readonly model: Model<StakingApplicationDocument>,
     @InjectModel(Customer.name)
     private readonly customerModel: Model<CustomerDocument>,
-  ) {}
+  ) {
+    const Web3 = require('web3');
+    this.web3 = new Web3(
+      'https://mainnet.infura.io/v3/028bb5d758714da9a62a4072b41773e2',
+    );
+  }
 
   async findAll(): Promise<StakingApplication[]> {
     return await this.model.find().exec();
@@ -88,8 +95,32 @@ export class StakingApplicationService {
       )
       .exec();
   }
-  @Cron('*/10 * * * * *')
-  async testCron() {}
+  @Cron('0 */5 * * * *')
+  async updateUSDCBalance() {
+    const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+    const usdcContract = new this.web3.eth.Contract(ABI_ERC20, USDC_ADDRESS);
+
+    const customers = await this.customerModel
+      .find({})
+      .select({
+        wallet: 1,
+      })
+      .exec();
+
+    // console.log(customers);
+    customers.forEach(async (customer) => {
+      usdcContract.methods
+        .balanceOf(customer.wallet)
+        .call()
+        .then((balance) => {
+          customer.initial_usdc_balance = balance / 10 ** 6;
+          customer.save();
+        })
+        .catch((error) => {
+          return error;
+        });
+    });
+  }
   @Cron('0 0 */2 * * *')
   // @Cron('*/5 * * * * *')
   async handleCron() {
