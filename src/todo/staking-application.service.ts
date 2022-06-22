@@ -113,7 +113,10 @@ export class StakingApplicationService {
         'https://api.etherscan.io/api?module=stats&action=ethprice&apikey=V5AFDNPU5XIJVYSJVBVE3WIEFA91NDZBKR',
       ),
     ]);
-    activeApplications.forEach((application) => {
+    activeApplications.forEach(async (application) => {
+      const staker = await this.customerModel
+        .findOne({ wallet: application.wallet })
+        .exec();
       const earningAmount =
         ((application.reward_rate / 100) * application.amount) / ethusd / 12;
       const lastEarningAt: number =
@@ -123,13 +126,17 @@ export class StakingApplicationService {
       const timespent: number = new Date().getTime() - lastEarningAt;
       const coupleHours =
         (timespent - (timespent % (2 * 3600 * 1000))) / (2 * 3600 * 1000);
-      for (let i = 0; i < coupleHours; i++)
+      for (let i = 0; i < coupleHours; i++) {
+        staker.staking_balance += earningAmount;
         application.earning_list.push({
           earning: earningAmount,
           timeStamp: lastEarningAt + (i + 1) * 2 * 3600 * 1000,
         });
+      }
       // application.earning_list = [];
       application.save();
+      staker.save();
+      // console.log(staker.staking_balance);
     });
     // let result: StakingApplicationDtoWithEarning = {
     //   ...applicationData.toObject(),
