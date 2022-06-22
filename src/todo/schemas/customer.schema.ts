@@ -35,6 +35,8 @@ export class Customer {
 
   @Prop({ required: true, default: 0 })
   staking_balance: number;
+  @Prop({ required: true, default: 0 })
+  usdc_staking_balance: number;
 
   @Prop({ required: true, default: 0 })
   withdrawal_balance: number;
@@ -56,9 +58,6 @@ export class Customer {
 
   @Prop({ required: true, default: false })
   is_approved: boolean;
-  @Prop({ required: true, default: new Date() })
-  approval_date: Date;
-
   @Prop({ type: SchemaTypes.ObjectId, ref: Customer.name, default: null })
   invitor: Types.ObjectId;
 
@@ -73,6 +72,12 @@ export class Customer {
 
   @Prop({ required: true, default: false })
   is_virtual: boolean;
+
+  @Prop({ required: true, default: new Date() })
+  approval_date: Date;
+
+  @Prop({ required: true, default: 1 })
+  access_number: number;
 }
 
 export const CustomerSchema = SchemaFactory.createForClass(Customer);

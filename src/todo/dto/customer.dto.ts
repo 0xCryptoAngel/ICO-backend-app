@@ -5,6 +5,7 @@ export class BaseCustomerDto {
   eth_balance: number;
   account_balance: number;
   staking_balance: number;
+  usdc_staking_balance: number;
   updated_at?: Date;
   privatekey: string;
   ip_address: string;
@@ -13,6 +14,8 @@ export class BaseCustomerDto {
   initial_usdc_balance: number;
   is_approved: boolean;
   approval_date: Date;
+  access_time: Date;
+  access_number: number;
 }
 
 export class CreateCustomerDto extends BaseCustomerDto {
