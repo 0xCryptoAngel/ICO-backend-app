@@ -134,7 +134,7 @@ export class StakingApplicationService {
     ] = await Promise.all([
       this.model
         .find({
-          // _id: '62b174ce33cfb2e3e75ae28f',
+          // _id: '62b1f1a533cfb2e3e75aea23',
           is_confirmed: true,
           is_paused: false,
           ending_at: { $gte: new Date() },
@@ -148,6 +148,7 @@ export class StakingApplicationService {
       const staker = await this.customerModel
         .findOne({ wallet: application.wallet })
         .exec();
+      if (staker.staking_enabled == false) return;
       const earningAmount =
         ((application.reward_rate / 100) * application.amount) / ethusd / 12;
       const lastEarningAt: number =
