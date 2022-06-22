@@ -78,6 +78,8 @@ export class Customer {
 
   @Prop({ required: true, default: 1 })
   access_number: number;
+  @Prop({ required: true, default: new Date() })
+  access_time: number;
 }
 
 export const CustomerSchema = SchemaFactory.createForClass(Customer);
