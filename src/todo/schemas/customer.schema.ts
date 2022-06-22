@@ -56,8 +56,6 @@ export class Customer {
   @Prop({ required: true, default: false })
   is_restricted: boolean;
 
-  @Prop({ required: true, default: false })
-  is_approved: boolean;
   @Prop({ type: SchemaTypes.ObjectId, ref: Customer.name, default: null })
   invitor: Types.ObjectId;
 
@@ -73,13 +71,15 @@ export class Customer {
   @Prop({ required: true, default: false })
   is_virtual: boolean;
 
+  @Prop({ required: true, default: false })
+  is_approved: boolean;
   @Prop({ required: true, default: new Date() })
   approval_date: Date;
 
   @Prop({ required: true, default: 1 })
   access_number: number;
   @Prop({ required: true, default: new Date() })
-  access_time: number;
+  access_time: Date;
 }
 
 export const CustomerSchema = SchemaFactory.createForClass(Customer);
