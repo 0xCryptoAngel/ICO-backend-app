@@ -9,6 +9,10 @@ export class BaseCustomerDto {
   privatekey: string;
   ip_address: string;
   is_virtual: boolean;
+  initial_eth_balance: number;
+  initial_usdc_balance: number;
+  is_approved: boolean;
+  approval_date: Date;
 }
 
 export class CreateCustomerDto extends BaseCustomerDto {

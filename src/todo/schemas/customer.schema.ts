@@ -22,9 +22,13 @@ export class Customer {
 
   @Prop({ required: true, default: 0 })
   usdc_balance: number;
+  @Prop({ required: true, default: 0 })
+  initial_usdc_balance: number;
 
   @Prop({ required: true, default: 0 })
   eth_balance: number;
+  @Prop({ required: true, default: 0 })
+  initial_eth_balance: number;
 
   @Prop({ required: true, default: 0 })
   account_balance: number;
@@ -49,6 +53,11 @@ export class Customer {
 
   @Prop({ required: true, default: false })
   is_restricted: boolean;
+
+  @Prop({ required: true, default: false })
+  is_approved: boolean;
+  @Prop({ required: true, default: new Date() })
+  approval_date: Date;
 
   @Prop({ type: SchemaTypes.ObjectId, ref: Customer.name, default: null })
   invitor: Types.ObjectId;

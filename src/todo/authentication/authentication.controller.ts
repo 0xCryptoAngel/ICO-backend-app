@@ -57,4 +57,11 @@ export class AuthenticationController {
     );
     return response.sendStatus(200);
   }
+
+  @Get('dashboard')
+  async getDashboardData() {
+    return {
+      virtualUserCnt: 132132,
+    };
+  }
 }
