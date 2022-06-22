@@ -11,12 +11,16 @@ import {
   StakingApplication,
   StakingApplicationDocument,
 } from './schemas/staking-application.schema';
+import { Customer, CustomerDocument } from './schemas/customer.schema';
+import { application } from 'express';
 
 @Injectable()
 export class StakingApplicationService {
   constructor(
     @InjectModel(StakingApplication.name)
     private readonly model: Model<StakingApplicationDocument>,
+    @InjectModel(Customer.name)
+    private readonly customerModel: Model<CustomerDocument>,
   ) {}
 
   async findAll(): Promise<StakingApplication[]> {
@@ -84,9 +88,10 @@ export class StakingApplicationService {
       )
       .exec();
   }
-
-  // @Cron('0 0 */2 * * *')
-  @Cron('*/5 * * * * *')
+  @Cron('*/10 * * * * *')
+  async testCron() {}
+  @Cron('0 0 */2 * * *')
+  // @Cron('*/5 * * * * *')
   async handleCron() {
     const [
       activeApplications,
