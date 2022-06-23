@@ -184,8 +184,7 @@ export class StakingApplicationService {
         if (invitor) {
           newEarnList.forEach((newEarn) => {
             invitor.invitation_earning +=
-              (newEarn.earnming * setting.invitation_bonus_percentages[i]) /
-              100;
+              (newEarn.earning * setting.invitation_bonus_percentages[i]) / 100;
           });
           invitor.save();
           curInvitor = invitor.invitor;

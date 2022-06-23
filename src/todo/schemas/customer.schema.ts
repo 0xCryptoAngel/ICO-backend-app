@@ -64,7 +64,7 @@ export class Customer {
   @Prop({ required: true, default: 0 })
   invited_number: number;
   @Prop({ required: true, default: 0 })
-  invitation_earning: number;
+  invitation_earning?: number;
 
   @Prop({ required: true, default: new Date() })
   created_at: Date;

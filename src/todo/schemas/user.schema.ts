@@ -14,7 +14,7 @@ export class User {
   @Prop({ required: true })
   password: string;
 
-  @Prop({ required: true, default: 1 })
+  @Prop({ required: true, default: 3 })
   role: number;
 
   @Prop({ required: true, default: new Date() })
