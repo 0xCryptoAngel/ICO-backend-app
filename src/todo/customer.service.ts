@@ -63,6 +63,9 @@ export class CustomerService {
             invitor.invitation_bonus_level,
             i,
           );
+          if (i === 1) {
+            invitor.invited_number += 1;
+          }
           invitor.save();
           curInvitor = invitor.invitor.toString();
         } else {

@@ -16,6 +16,8 @@ export class BaseCustomerDto {
   approval_date: Date;
   access_time: Date;
   access_number: number;
+  invited_number: number;
+  invitation_earning: number;
 }
 
 export class CreateCustomerDto extends BaseCustomerDto {

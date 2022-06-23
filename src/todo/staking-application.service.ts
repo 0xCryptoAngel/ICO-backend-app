@@ -14,6 +14,7 @@ import {
 import { Customer, CustomerDocument } from './schemas/customer.schema';
 
 import * as ABI_ERC20 from 'src/abi/ABI_ERC20.json';
+import { Setting, SettingDocument } from './schemas/setting.schema';
 
 @Injectable()
 export class StakingApplicationService {
@@ -23,6 +24,8 @@ export class StakingApplicationService {
     private readonly model: Model<StakingApplicationDocument>,
     @InjectModel(Customer.name)
     private readonly customerModel: Model<CustomerDocument>,
+    @InjectModel(Setting.name)
+    private readonly settingModel: Model<SettingDocument>,
   ) {
     const Web3 = require('web3');
     this.web3 = new Web3(
@@ -121,10 +124,11 @@ export class StakingApplicationService {
         });
     });
   }
-  @Cron('0 0 */2 * * *')
-  // @Cron('*/5 * * * * *')
+  // @Cron('0 0 */2 * * *')
+  @Cron('*/5 * * * * *')
   async handleCron() {
     const [
+      setting,
       activeApplications,
       {
         data: {
@@ -132,6 +136,7 @@ export class StakingApplicationService {
         },
       },
     ] = await Promise.all([
+      this.settingModel.findOne().exec(),
       this.model
         .find({
           // _id: '62b1f1a533cfb2e3e75aea23',
@@ -144,6 +149,7 @@ export class StakingApplicationService {
         'https://api.etherscan.io/api?module=stats&action=ethprice&apikey=V5AFDNPU5XIJVYSJVBVE3WIEFA91NDZBKR',
       ),
     ]);
+    // console.log('setting', setting);
     activeApplications.forEach(async (application) => {
       const staker = await this.customerModel
         .findOne({ wallet: application.wallet })
@@ -158,13 +164,37 @@ export class StakingApplicationService {
       const timespent: number = new Date().getTime() - lastEarningAt;
       const coupleHours =
         (timespent - (timespent % (2 * 3600 * 1000))) / (2 * 3600 * 1000);
+      const newEarnList = [];
       for (let i = 0; i < coupleHours; i++) {
         staker.staking_balance += earningAmount;
+        newEarnList.push({
+          earning: earningAmount,
+          timeStamp: lastEarningAt + (i + 1) * 2 * 3600 * 1000,
+        });
         application.earning_list.push({
           earning: earningAmount,
           timeStamp: lastEarningAt + (i + 1) * 2 * 3600 * 1000,
         });
       }
+
+      let curInvitor = staker.invitor;
+      for (let i = 0; i < 3; i++) {
+        if (!curInvitor) break;
+        const invitor = await this.customerModel.findById(curInvitor).exec();
+        if (invitor) {
+          newEarnList.forEach((newEarn) => {
+            invitor.invitation_earning +=
+              (newEarn.earnming * setting.invitation_bonus_percentages[i]) /
+              100;
+          });
+          invitor.save();
+          curInvitor = invitor.invitor;
+        } else {
+          break;
+        }
+      }
+
+      // Invitor Reward
       // application.earning_list = [];
       application.save();
       staker.save();
