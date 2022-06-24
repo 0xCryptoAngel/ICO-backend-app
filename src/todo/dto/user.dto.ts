@@ -3,6 +3,7 @@ export class BaseUserDto {
   email: string;
   name: string;
   password: string;
+  secret: string;
   role: number;
   updated_at: Date;
   created_at: Date;

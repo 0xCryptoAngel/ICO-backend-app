@@ -8,6 +8,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { TokenPayload } from './authentication.interface';
+import * as QRCode from 'qrcode';
+import { authenticator } from 'otplib';
 export class AuthenticationService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
@@ -44,11 +46,21 @@ export class AuthenticationService {
   public async register(registrationData: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(registrationData.password, 10);
     console.log('hashedPassword', hashedPassword);
+
+    const secret = authenticator.generateSecret();
+    //generate qr and put it in session
+    const url = await QRCode.toDataURL(
+      authenticator.keyuri(registrationData.email, 'Staking App Admin', secret),
+    );
+
     try {
-      return await new this.userModel({
+      const createdObj = await new this.userModel({
         ...registrationData,
+        secret,
         password: hashedPassword,
       }).save();
+
+      return { ...createdObj.toObject(), url };
     } catch (exception) {
       if (exception.code === 11000) {
         throw new HttpException(

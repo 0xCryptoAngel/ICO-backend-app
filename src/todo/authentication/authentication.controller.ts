@@ -4,6 +4,8 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -17,6 +19,7 @@ import { LocalAuthenticationGuard } from './localAuthentication.guard';
 import { RequestWithUser } from './authentication.interface';
 import { Response } from 'express';
 import JwtAuthenticationGuard from './jwt-authentication.guard';
+import { authenticator } from 'otplib';
 
 @Controller('auth')
 export class AuthenticationController {
@@ -32,15 +35,24 @@ export class AuthenticationController {
 
   @Post()
   async register(@Body() registrationData: CreateUserDto) {
-    console.log(registrationData);
     return await this.authenticationService.register(registrationData);
   }
 
   @HttpCode(200)
   @UseGuards(LocalAuthenticationGuard)
   @Post('log-in')
-  async logIn(@Req() request: RequestWithUser, @Res() response: Response) {
+  async logIn(
+    @Body() { totp_code: totp_code },
+    @Req() request: RequestWithUser,
+    @Res() response: Response,
+  ) {
     const { user } = request;
+    if (!authenticator.check(totp_code, user.secret)) {
+      throw new HttpException(
+        'Authenticator Code Invalid',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
     const cookie = this.authenticationService.getCookieWithJwtToken(user.email);
     response.setHeader('Access-Control-Allow-Headers', 'Authorization');
     response.setHeader('Set-Cookie', cookie);
@@ -56,12 +68,5 @@ export class AuthenticationController {
       this.authenticationService.getCookieForLogOut(),
     );
     return response.sendStatus(200);
-  }
-
-  @Get('dashboard')
-  async getDashboardData() {
-    return {
-      virtualUserCnt: 132132,
-    };
   }
 }
