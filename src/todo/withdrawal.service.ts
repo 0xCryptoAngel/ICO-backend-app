@@ -19,6 +19,7 @@ export class WithdrawalService {
   }
 
   async create(createWithdrawalDto: CreateWithdrawalDto): Promise<Withdrawal> {
+    createWithdrawalDto.created_at = new Date();
     return await new this.model(createWithdrawalDto).save();
   }
 

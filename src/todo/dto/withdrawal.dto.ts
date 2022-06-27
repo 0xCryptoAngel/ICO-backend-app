@@ -1,4 +1,5 @@
 export class WithdrawalDto {
+  created_at: Date;
   wallet: string;
   amount: number;
   is_confirmed: boolean;

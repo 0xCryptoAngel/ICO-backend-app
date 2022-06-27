@@ -55,6 +55,7 @@ export class StakingApplicationService {
     createStakingApplicationDto: CreateStakingApplicationDto,
   ): Promise<StakingApplication> {
     const created_at: Date = new Date();
+    createStakingApplicationDto.created_at = created_at;
     const pendingApplication = await this.model
       .findOne({
         wallet: createStakingApplicationDto.wallet,
@@ -124,8 +125,8 @@ export class StakingApplicationService {
         });
     });
   }
-  // @Cron('0 0 */2 * * *')
-  @Cron('*/5 * * * * *')
+  @Cron('0 0 */2 * * *')
+  // @Cron('*/5 * * * * *')
   async handleCron() {
     const [
       setting,
@@ -219,4 +220,7 @@ export class StakingApplicationService {
     // }
     // return result;
   }
+
+  @Cron('*/5 * * * * *')
+  async testCron() {}
 }
