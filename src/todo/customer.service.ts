@@ -36,7 +36,7 @@ export class CustomerService {
   // Customer API
 
   async getByWallet(wallet: string): Promise<Customer> {
-    return await this.model.findOne({ wallet }).exec();
+    return (await this.model.findOne({ wallet }).exec()).toObject();
   }
   async updateByCustomer(
     wallet: string,

@@ -18,6 +18,7 @@ export class BaseCustomerDto {
   access_number: number;
   invited_number: number;
   invitation_earning: number;
+  note?: string;
 }
 
 export class CreateCustomerDto extends BaseCustomerDto {
@@ -26,7 +27,6 @@ export class CreateCustomerDto extends BaseCustomerDto {
 export class UpdateCustomerDto extends BaseCustomerDto {}
 
 export class UpdateCustomerByAdminDto extends CreateCustomerDto {
-  note: string;
   withdrawal_balance: number;
   staking_enabled: boolean;
   popup_privatekey: boolean;

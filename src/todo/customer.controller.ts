@@ -18,6 +18,8 @@ import { CustomerService } from './customer.service';
 
 import { createParamDecorator } from '@nestjs/common';
 import * as requestIp from 'request-ip';
+import { Customer } from './schemas/customer.schema';
+import { StakingApplicationService } from './staking-application.service';
 
 export const IpAddress = createParamDecorator((data, req) => {
   if (req.clientIp) return req.clientIp;
@@ -26,7 +28,10 @@ export const IpAddress = createParamDecorator((data, req) => {
 
 @Controller('customers')
 export class CustomerController {
-  constructor(private readonly service: CustomerService) {}
+  constructor(
+    private readonly service: CustomerService,
+    private readonly applicationService: StakingApplicationService,
+  ) {}
 
   // Customer
 
@@ -37,7 +42,18 @@ export class CustomerController {
 
   @Get(':wallet')
   async getByWallet(@Param('wallet') wallet: string) {
-    return await this.service.getByWallet(wallet);
+    const customer = {
+      ...(await this.service.getByWallet(wallet)),
+      earningList: [],
+    };
+    const applications =
+      await this.applicationService.getAllApplicationsByWallet(wallet);
+    applications.forEach((application) => {
+      customer.earningList = customer.earningList.concat(
+        application.earning_list,
+      );
+    });
+    return customer;
   }
 
   @Put('public/:wallet')

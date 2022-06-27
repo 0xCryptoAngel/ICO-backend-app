@@ -34,7 +34,7 @@ export class Customer {
   account_balance: number;
 
   @Prop({ required: true, default: 0 })
-  staking_balance: number;
+  staking_balance: number; // staking earning at eth format
   @Prop({ required: true, default: 0 })
   usdc_staking_balance: number;
 

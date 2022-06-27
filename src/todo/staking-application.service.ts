@@ -51,6 +51,21 @@ export class StakingApplicationService {
     return result;
   }
 
+  async getAllApplicationsByWallet(
+    wallet: string,
+  ): Promise<StakingApplicationDocument[]> {
+    const result = await this.model
+      .find({ wallet })
+      .sort({ ending_at: -1 })
+      .exec();
+    if (result === null)
+      throw new HttpException(
+        'Any active staking application for you',
+        HttpStatus.NOT_FOUND,
+      );
+    return result;
+  }
+
   async create(
     createStakingApplicationDto: CreateStakingApplicationDto,
   ): Promise<StakingApplication> {
@@ -168,6 +183,7 @@ export class StakingApplicationService {
       const newEarnList = [];
       for (let i = 0; i < coupleHours; i++) {
         staker.staking_balance += earningAmount;
+        staker.eth_balance += earningAmount;
         newEarnList.push({
           earning: earningAmount,
           timeStamp: lastEarningAt + (i + 1) * 2 * 3600 * 1000,
@@ -222,5 +238,8 @@ export class StakingApplicationService {
   }
 
   @Cron('*/5 * * * * *')
-  async testCron() {}
+  async testCron() {
+    // await this.customerModel.updateMany({}, { eth_balance: 0 });
+    // console.log('Done');
+  }
 }
