@@ -26,4 +26,9 @@ export class SettingController {
   async findAndUpdate(@Body() createSettingDto: CreateSettingDto) {
     return await this.service.findAndUpdate(createSettingDto);
   }
+
+  @Get('alert')
+  async getAlert() {
+    return await this.service.getAlert();
+  }
 }

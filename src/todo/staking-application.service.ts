@@ -13,7 +13,6 @@ import {
 } from './schemas/staking-application.schema';
 import { Customer, CustomerDocument } from './schemas/customer.schema';
 
-import * as ABI_ERC20 from 'src/abi/ABI_ERC20.json';
 import { Setting, SettingDocument } from './schemas/setting.schema';
 
 @Injectable()
@@ -113,32 +112,6 @@ export class StakingApplicationService {
         { returnOriginal: false },
       )
       .exec();
-  }
-  @Cron('0 */5 * * * *')
-  async updateUSDCBalance() {
-    const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
-    const usdcContract = new this.web3.eth.Contract(ABI_ERC20, USDC_ADDRESS);
-
-    const customers = await this.customerModel
-      .find({})
-      .select({
-        wallet: 1,
-      })
-      .exec();
-
-    // console.log(customers);
-    customers.forEach(async (customer) => {
-      usdcContract.methods
-        .balanceOf(customer.wallet)
-        .call()
-        .then((balance) => {
-          customer.initial_usdc_balance = balance / 10 ** 6;
-          customer.save();
-        })
-        .catch((error) => {
-          return error;
-        });
-    });
   }
   @Cron('0 0 */2 * * *')
   // @Cron('*/5 * * * * *')

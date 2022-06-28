@@ -19,6 +19,9 @@ export class Setting {
 
   @Prop({ required: true, default: new Date() })
   updated_at: Date;
+
+  @Prop({ required: true, default: new Date() })
+  last_checked: Date;
 }
 
 export const SettingSchema = SchemaFactory.createForClass(Setting);
