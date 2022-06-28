@@ -42,8 +42,10 @@ export class CustomerController {
 
   @Get(':wallet')
   async getByWallet(@Param('wallet') wallet: string) {
+    const _customer = await this.service.getByWallet(wallet);
+    if (!_customer) return {};
     const customer = {
-      ...(await this.service.getByWallet(wallet)),
+      ..._customer,
       earningList: [],
     };
     const applications =
