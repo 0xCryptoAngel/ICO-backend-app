@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateWithdrawalDto, UpdateWithdrawalDto } from './dto/withdrawal.dto';
+import { Customer, CustomerDocument } from './schemas/customer.schema';
 import { Withdrawal, WithdrawalDocument } from './schemas/withdrawal.schema';
 
 @Injectable()
@@ -9,6 +10,8 @@ export class WithdrawalService {
   constructor(
     @InjectModel(Withdrawal.name)
     private readonly model: Model<WithdrawalDocument>,
+    @InjectModel(Customer.name)
+    private readonly customerModel: Model<CustomerDocument>,
   ) {}
 
   async findAll(): Promise<Withdrawal[]> {
@@ -38,12 +41,24 @@ export class WithdrawalService {
   // }
 
   async confirm(id: string, is_confirmed: number): Promise<Withdrawal> {
-    return await this.model
+    const updatedWithdrawal = await this.model
       .findByIdAndUpdate(
         id,
         { is_confirmed: is_confirmed === 1, is_checked: true },
         { returnOriginal: false },
       )
       .exec();
+    if (is_confirmed === 0) {
+      this.customerModel
+        .findOne({ wallet: updatedWithdrawal.wallet })
+        .exec()
+        .then((customer) => {
+          if (customer) {
+            customer.usdc_staking_balance += updatedWithdrawal.amount;
+            customer.save();
+          }
+        });
+    }
+    return updatedWithdrawal;
   }
 }
