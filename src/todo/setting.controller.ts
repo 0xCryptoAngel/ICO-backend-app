@@ -31,4 +31,8 @@ export class SettingController {
   async getAlert() {
     return await this.service.getAlert();
   }
+  @Get('usdc_logs')
+  async getUSDCLogs() {
+    return this.service.usdc_cached_logs;
+  }
 }

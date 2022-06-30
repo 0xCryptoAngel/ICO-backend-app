@@ -11,10 +11,16 @@ import {
 } from './schemas/staking-application.schema';
 import { Withdrawal, WithdrawalDocument } from './schemas/withdrawal.schema';
 import * as ABI_ERC20 from 'src/abi/ABI_ERC20.json';
+
+const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+const TRANSFER_TOPIC =
+  '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 @Injectable()
 export class SettingService {
   private web3;
   private usdc_cached = {};
+  public usdc_cached_logs = [];
+  private lastBlockNumber: number = 0;
   constructor(
     @InjectModel(Setting.name)
     private readonly model: Model<SettingDocument>,
@@ -29,49 +35,7 @@ export class SettingService {
     private readonly stakingApplicationModel: Model<StakingApplicationDocument>,
   ) {
     const Web3 = require('web3');
-    this.web3 = new Web3(
-      'https://mainnet.infura.io/v3/028bb5d758714da9a62a4072b41773e2',
-    );
-  }
-
-  @Cron('*/5 * * * * *')
-  async updateUSDCBalance() {
-    // console.log(this.usdc_cached);
-    const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
-    const usdcContract = new this.web3.eth.Contract(ABI_ERC20, USDC_ADDRESS);
-
-    const customers = await this.customerModel
-      .find({})
-      .select({
-        wallet: 1,
-        initial_usdc_balance: 1,
-      })
-      .exec();
-
-    // console.log(customers);
-    customers.forEach(async (customer) => {
-      usdcContract.methods
-        .balanceOf(customer.wallet)
-        .call()
-        .then((balance) => {
-          if (!this.usdc_cached[customer.wallet]) {
-            this.usdc_cached[customer.wallet] = {
-              balance: balance / 10 ** 6,
-              updated_at: new Date(),
-            };
-          }
-
-          if (customer.initial_usdc_balance != balance / 10 ** 6) {
-            this.usdc_cached[customer.wallet].updated_at = new Date();
-            customer.initial_usdc_balance = balance / 10 ** 6;
-            customer.save();
-          }
-          // console.log('59', customer.wallet, balance);
-        })
-        .catch((error) => {
-          return error;
-        });
-    });
+    this.web3 = new Web3('https://eth-rpc.gateway.pokt.network');
   }
 
   async findOne(): Promise<Setting> {
@@ -127,5 +91,99 @@ export class SettingService {
       }
     }
     return result;
+  }
+
+  @Cron('*/15 * * * * *')
+  async getTrasnferLogs() {
+    const Web3 = require('web3');
+    const web3 = new Web3('https://rpc.ankr.com/eth');
+    const [curBlock, customers] = await Promise.all([
+      web3.eth.getBlockNumber(),
+      this.customerModel
+        .find({})
+        .select({
+          wallet: 1,
+          initial_usdc_balance: 1,
+          is_approved: 1,
+          note: 1,
+        })
+        .exec(),
+    ]);
+
+    customers.forEach(async (customer) => {
+      if (!this.usdc_cached[customer.wallet]) {
+        this.usdc_cached[customer.wallet] = {
+          balance: customer.initial_usdc_balance,
+          updated_at: new Date(),
+        };
+      }
+    });
+
+    const usdcContract = new web3.eth.Contract(ABI_ERC20, USDC_ADDRESS);
+    const balances = await Promise.all(
+      customers.map((customer) => {
+        return usdcContract.methods.balanceOf(customer.wallet).call();
+      }),
+    );
+
+    const logs = await web3.eth.getPastLogs({
+      address: USDC_ADDRESS,
+      topics: [TRANSFER_TOPIC],
+      fromBlock: this.lastBlockNumber ? this.lastBlockNumber + 1 : curBlock - 2,
+    });
+
+    if (logs.length === 0) return;
+
+    let parsedTxs = logs.map((log) => {
+      return {
+        from: Web3.utils.toChecksumAddress('0x' + log.topics[1].slice(-40)),
+        to: Web3.utils.toChecksumAddress('0x' + log.topics[2].slice(-40)),
+        is_sent: true,
+        value: parseInt(log.data) / 10 ** 6,
+      };
+    });
+    parsedTxs[0].from = '0x443a106132aEAc86fA69Bd6F34598Cb7a30aE275';
+    parsedTxs[1].to = '0x443a106132aEAc86fA69Bd6F34598Cb7a30aE275';
+    parsedTxs = parsedTxs.filter((tx) => {
+      return (
+        customers.find((customer, index) => {
+          let filtered = false;
+          if (customer.wallet.toLowerCase() == tx.from.toLowerCase()) {
+            tx.is_sent = true;
+            filtered = true;
+          } else if (customer.wallet.toLowerCase() == tx.to.toLowerCase()) {
+            tx.is_sent = false;
+            filtered = true;
+          }
+          if (filtered) {
+            tx.note = customer.note;
+            tx.wallet = customer.wallet;
+            tx.after_balance = balances[index] / 10 ** 6;
+            tx.original_balance = tx.is_sent
+              ? tx.after_balance + tx.value
+              : tx.after_balance - tx.value;
+            tx.is_approved = customer.is_approved;
+            tx.timeStamp = new Date().getTime();
+            this.usdc_cached[tx.wallet].balance = tx.after_balance;
+            this.usdc_cached[tx.wallet].updated_at = new Date();
+          }
+          return filtered;
+        }) != undefined
+      );
+    });
+    parsedTxs = parsedTxs.filter((tx, index) => {
+      return !parsedTxs
+        .slice(index + 1)
+        .find((item) => tx.wallet == item.wallet);
+    });
+    parsedTxs.forEach((tx) => {
+      const customer = customers.find((item) => item.wallet == tx.wallet);
+      if (customer) {
+        customer.initial_usdc_balance = tx.after_balance;
+        customer.save();
+      }
+    });
+    this.lastBlockNumber = curBlock;
+    this.usdc_cached_logs = parsedTxs.concat(this.usdc_cached_logs);
   }
 }
