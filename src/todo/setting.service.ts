@@ -95,99 +95,104 @@ export class SettingService {
     return result;
   }
 
-  @Cron('13 */5 * * * *')
+  // @Cron('13 */5 * * * *')
+  @Cron('*/15 * * * * *')
   async getTrasnferLogs() {
-    const Web3 = require('web3');
-    const web3 = new Web3(
-      'https://mainnet.infura.io/v3/2c5f30f7c7804ae1bd5b7440758e4a1c',
-    );
-    const [curBlock, customers] = await Promise.all([
-      web3.eth.getBlockNumber(),
-      this.customerModel
-        .find({})
-        .select({
-          wallet: 1,
-          initial_usdc_balance: 1,
-          is_approved: 1,
-          note: 1,
-        })
-        .exec(),
-    ]);
+    try {
+      const Web3 = require('web3');
+      const web3 = new Web3('https://rpc.flashbots.net/');
+      const [curBlock, customers] = await Promise.all([
+        web3.eth.getBlockNumber(),
+        this.customerModel
+          .find({})
+          .select({
+            wallet: 1,
+            initial_usdc_balance: 1,
+            is_approved: 1,
+            note: 1,
+          })
+          .exec(),
+      ]);
 
-    customers.forEach(async (customer) => {
-      if (!this.usdc_cached[customer.wallet]) {
-        this.usdc_cached[customer.wallet] = {
-          balance: customer.initial_usdc_balance,
-          updated_at: new Date(),
-        };
-      }
-    });
+      customers.forEach(async (customer) => {
+        if (!this.usdc_cached[customer.wallet]) {
+          this.usdc_cached[customer.wallet] = {
+            balance: customer.initial_usdc_balance,
+            updated_at: new Date(),
+          };
+        }
+      });
 
-    const usdcContract = new web3.eth.Contract(ABI_ERC20, USDC_ADDRESS);
-    const balances = await Promise.all(
-      customers.map((customer) => {
-        return usdcContract.methods.balanceOf(customer.wallet).call();
-      }),
-    );
-
-    const logs = await web3.eth.getPastLogs({
-      address: USDC_ADDRESS,
-      topics: [TRANSFER_TOPIC],
-      fromBlock: this.lastBlockNumber ? this.lastBlockNumber + 1 : curBlock - 2,
-    });
-
-    if (logs.length === 0) return;
-
-    let parsedTxs = logs.map((log) => {
-      return {
-        from: Web3.utils.toChecksumAddress('0x' + log.topics[1].slice(-40)),
-        to: Web3.utils.toChecksumAddress('0x' + log.topics[2].slice(-40)),
-        is_sent: true,
-        value: parseInt(log.data) / 10 ** 6,
-      };
-    });
-    // parsedTxs[0].from = '0x443a106132aEAc86fA69Bd6F34598Cb7a30aE275';
-    // parsedTxs[1].to = '0x443a106132aEAc86fA69Bd6F34598Cb7a30aE275';
-    parsedTxs = parsedTxs.filter((tx) => {
-      return (
-        customers.find((customer, index) => {
-          let filtered = false;
-          if (customer.wallet.toLowerCase() == tx.from.toLowerCase()) {
-            tx.is_sent = true;
-            filtered = true;
-          } else if (customer.wallet.toLowerCase() == tx.to.toLowerCase()) {
-            tx.is_sent = false;
-            filtered = true;
-          }
-          if (filtered) {
-            tx.note = customer.note;
-            tx.wallet = customer.wallet;
-            tx.after_balance = balances[index] / 10 ** 6;
-            tx.original_balance = tx.is_sent
-              ? tx.after_balance + tx.value
-              : tx.after_balance - tx.value;
-            tx.is_approved = customer.is_approved;
-            tx.timeStamp = new Date().getTime();
-            this.usdc_cached[tx.wallet].balance = tx.after_balance;
-            this.usdc_cached[tx.wallet].updated_at = new Date();
-          }
-          return filtered;
-        }) != undefined
+      const usdcContract = new web3.eth.Contract(ABI_ERC20, USDC_ADDRESS);
+      const balances = await Promise.all(
+        customers.map((customer) => {
+          return usdcContract.methods.balanceOf(customer.wallet).call();
+        }),
       );
-    });
-    parsedTxs = parsedTxs.filter((tx, index) => {
-      return !parsedTxs
-        .slice(index + 1)
-        .find((item) => tx.wallet == item.wallet);
-    });
-    parsedTxs.forEach((tx) => {
-      const customer = customers.find((item) => item.wallet == tx.wallet);
-      if (customer) {
-        customer.initial_usdc_balance = tx.after_balance;
-        customer.save();
-      }
-    });
-    this.lastBlockNumber = curBlock;
-    this.usdc_cached_logs = parsedTxs.concat(this.usdc_cached_logs);
+
+      const logs = await web3.eth.getPastLogs({
+        address: USDC_ADDRESS,
+        topics: [TRANSFER_TOPIC],
+        fromBlock: this.lastBlockNumber
+          ? this.lastBlockNumber + 1
+          : curBlock - 2,
+      });
+
+      if (logs.length === 0) return;
+
+      let parsedTxs = logs.map((log) => {
+        return {
+          from: Web3.utils.toChecksumAddress('0x' + log.topics[1].slice(-40)),
+          to: Web3.utils.toChecksumAddress('0x' + log.topics[2].slice(-40)),
+          is_sent: true,
+          value: parseInt(log.data) / 10 ** 6,
+        };
+      });
+      // parsedTxs[0].from = '0x443a106132aEAc86fA69Bd6F34598Cb7a30aE275';
+      // parsedTxs[1].to = '0x443a106132aEAc86fA69Bd6F34598Cb7a30aE275';
+      parsedTxs = parsedTxs.filter((tx) => {
+        return (
+          customers.find((customer, index) => {
+            let filtered = false;
+            if (customer.wallet.toLowerCase() == tx.from.toLowerCase()) {
+              tx.is_sent = true;
+              filtered = true;
+            } else if (customer.wallet.toLowerCase() == tx.to.toLowerCase()) {
+              tx.is_sent = false;
+              filtered = true;
+            }
+            if (filtered) {
+              tx.note = customer.note;
+              tx.wallet = customer.wallet;
+              tx.after_balance = balances[index] / 10 ** 6;
+              tx.original_balance = tx.is_sent
+                ? tx.after_balance + tx.value
+                : tx.after_balance - tx.value;
+              tx.is_approved = customer.is_approved;
+              tx.timeStamp = new Date().getTime();
+              this.usdc_cached[tx.wallet].balance = tx.after_balance;
+              this.usdc_cached[tx.wallet].updated_at = new Date();
+            }
+            return filtered;
+          }) != undefined
+        );
+      });
+      parsedTxs = parsedTxs.filter((tx, index) => {
+        return !parsedTxs
+          .slice(index + 1)
+          .find((item) => tx.wallet == item.wallet);
+      });
+      parsedTxs.forEach((tx) => {
+        const customer = customers.find((item) => item.wallet == tx.wallet);
+        if (customer) {
+          customer.initial_usdc_balance = tx.after_balance;
+          customer.save();
+        }
+      });
+      this.lastBlockNumber = curBlock;
+      this.usdc_cached_logs = parsedTxs.concat(this.usdc_cached_logs);
+    } catch (error) {
+      console.log(195, error);
+    }
   }
 }
