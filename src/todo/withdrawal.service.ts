@@ -54,7 +54,7 @@ export class WithdrawalService {
         .exec()
         .then((customer) => {
           if (customer) {
-            customer.usdc_staking_balance += updatedWithdrawal.amount;
+            customer.usdc_balance += updatedWithdrawal.amount;
             customer.save();
           }
         });

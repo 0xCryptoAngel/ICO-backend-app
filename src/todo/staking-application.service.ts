@@ -144,6 +144,12 @@ export class StakingApplicationService {
       const staker = await this.customerModel
         .findOne({ wallet: application.wallet })
         .exec();
+      if (
+        new Date(application.ending_at).getTime() <
+        new Date().getTime() + 3600 * 1000 * 2
+      ) {
+        staker.usdc_balance += application.amount;
+      }
       if (staker.staking_enabled == false) return;
       const earningAmount =
         ((application.reward_rate / 100) * application.amount) / ethusd / 12;
