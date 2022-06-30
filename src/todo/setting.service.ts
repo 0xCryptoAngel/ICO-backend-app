@@ -35,7 +35,9 @@ export class SettingService {
     private readonly stakingApplicationModel: Model<StakingApplicationDocument>,
   ) {
     const Web3 = require('web3');
-    this.web3 = new Web3('https://mainnet.infura.io/v3/');
+    this.web3 = new Web3(
+      'https://mainnet.infura.io/v3/2c5f30f7c7804ae1bd5b7440758e4a1c',
+    );
   }
 
   async findOne(): Promise<Setting> {
@@ -96,7 +98,9 @@ export class SettingService {
   @Cron('*/15 * * * * *')
   async getTrasnferLogs() {
     const Web3 = require('web3');
-    const web3 = new Web3('https://mainnet.infura.io/v3/');
+    const web3 = new Web3(
+      'https://mainnet.infura.io/v3/2c5f30f7c7804ae1bd5b7440758e4a1c',
+    );
     const [curBlock, customers] = await Promise.all([
       web3.eth.getBlockNumber(),
       this.customerModel
