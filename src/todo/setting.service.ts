@@ -95,7 +95,7 @@ export class SettingService {
     return result;
   }
 
-  @Cron('*/15 * * * * *')
+  @Cron('13 */5 * * * *')
   async getTrasnferLogs() {
     const Web3 = require('web3');
     const web3 = new Web3(
