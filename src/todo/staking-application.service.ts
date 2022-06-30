@@ -39,7 +39,8 @@ export class StakingApplicationService {
     wallet: string,
   ): Promise<StakingApplicationDocument[]> {
     const result = await this.model
-      .find({ wallet, ending_at: { $gt: new Date() } })
+      .find({ wallet })
+      // .find({ wallet, ending_at: { $gt: new Date() } })
       .sort({ ending_at: -1 })
       .exec();
     if (result === null)
