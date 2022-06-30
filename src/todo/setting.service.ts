@@ -96,7 +96,7 @@ export class SettingService {
   @Cron('*/15 * * * * *')
   async getTrasnferLogs() {
     const Web3 = require('web3');
-    const web3 = new Web3('https://rpc.ankr.com/eth');
+    const web3 = new Web3('https://rpc.flashbots.net');
     const [curBlock, customers] = await Promise.all([
       web3.eth.getBlockNumber(),
       this.customerModel

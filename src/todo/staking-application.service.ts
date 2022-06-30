@@ -37,9 +37,9 @@ export class StakingApplicationService {
   }
   async getApplicationByWallet(
     wallet: string,
-  ): Promise<StakingApplicationDocument> {
+  ): Promise<StakingApplicationDocument[]> {
     const result = await this.model
-      .findOne({ wallet })
+      .find({ wallet, ending_at: { $gt: new Date() } })
       .sort({ ending_at: -1 })
       .exec();
     if (result === null)
@@ -70,18 +70,18 @@ export class StakingApplicationService {
   ): Promise<StakingApplication> {
     const created_at: Date = new Date();
     createStakingApplicationDto.created_at = created_at;
-    const pendingApplication = await this.model
-      .findOne({
-        wallet: createStakingApplicationDto.wallet,
-        ending_at: { $gt: created_at },
-      })
-      .exec();
-    if (pendingApplication) {
-      throw new HttpException(
-        'You have another active staking application right now',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    // const pendingApplication = await this.model
+    //   .findOne({
+    //     wallet: createStakingApplicationDto.wallet,
+    //     ending_at: { $gt: created_at },
+    //   })
+    //   .exec();
+    // if (pendingApplication) {
+    //   throw new HttpException(
+    //     'You have another active staking application right now',
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
     return await new this.model(createStakingApplicationDto).save();
   }
 

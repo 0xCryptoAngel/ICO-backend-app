@@ -19,7 +19,3 @@ export class StakingApplicationDto {
 
 export class CreateStakingApplicationDto extends StakingApplicationDto {}
 export class UpdateStakingApplicationDto extends StakingApplicationDto {}
-
-export class StakingApplicationDtoWithEarning extends StakingApplicationDto {
-  earning: number;
-}

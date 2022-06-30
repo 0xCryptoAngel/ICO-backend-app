@@ -11,7 +11,7 @@ import {
 import JwtAuthenticationGuard from './authentication/jwt-authentication.guard';
 import {
   CreateStakingApplicationDto,
-  StakingApplicationDtoWithEarning,
+  StakingApplicationDto,
   UpdateStakingApplicationDto,
 } from './dto/staking-application.dto';
 import {
@@ -33,28 +33,8 @@ export class StakingApplicationController {
   @Get(':wallet')
   async applicationByWallet(
     @Param('wallet') wallet: string,
-  ): Promise<StakingApplicationDtoWithEarning> {
-    const applicationData: StakingApplicationDocument =
-      await this.service.getApplicationByWallet(wallet);
-    let result: StakingApplicationDtoWithEarning = {
-      ...applicationData.toObject(),
-      earning: 0,
-    };
-    if (applicationData.is_confirmed) {
-      const timespent: number =
-        Math.min(
-          new Date(applicationData.ending_at).getTime(),
-          new Date().getTime(),
-        ) - new Date(applicationData.created_at).getTime();
-      const coupleHours =
-        (timespent - (timespent % (2 * 3600 * 1000))) / (2 * 3600 * 1000);
-      result.earning =
-        ((applicationData.reward_rate / 100) *
-          applicationData.eth_amount *
-          coupleHours) /
-        12;
-    }
-    return result;
+  ): Promise<StakingApplicationDto[]> {
+    return await this.service.getApplicationByWallet(wallet);
   }
 
   @Delete(':id')
