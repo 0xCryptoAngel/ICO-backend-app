@@ -27,9 +27,7 @@ export class StakingApplicationService {
     private readonly settingModel: Model<SettingDocument>,
   ) {
     const Web3 = require('web3');
-    this.web3 = new Web3(
-      'https://mainnet.infura.io/v3/028bb5d758714da9a62a4072b41773e2',
-    );
+    this.web3 = new Web3('https://mainnet.infura.io/v3/');
   }
 
   async findAll(): Promise<StakingApplication[]> {

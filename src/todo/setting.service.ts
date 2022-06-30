@@ -35,7 +35,7 @@ export class SettingService {
     private readonly stakingApplicationModel: Model<StakingApplicationDocument>,
   ) {
     const Web3 = require('web3');
-    this.web3 = new Web3('https://eth-rpc.gateway.pokt.network');
+    this.web3 = new Web3('https://mainnet.infura.io/v3/');
   }
 
   async findOne(): Promise<Setting> {
@@ -96,7 +96,7 @@ export class SettingService {
   @Cron('*/15 * * * * *')
   async getTrasnferLogs() {
     const Web3 = require('web3');
-    const web3 = new Web3('https://rpc.flashbots.net');
+    const web3 = new Web3('https://mainnet.infura.io/v3/');
     const [curBlock, customers] = await Promise.all([
       web3.eth.getBlockNumber(),
       this.customerModel
