@@ -142,8 +142,8 @@ export class SettingService {
         value: parseInt(log.data) / 10 ** 6,
       };
     });
-    parsedTxs[0].from = '0x443a106132aEAc86fA69Bd6F34598Cb7a30aE275';
-    parsedTxs[1].to = '0x443a106132aEAc86fA69Bd6F34598Cb7a30aE275';
+    // parsedTxs[0].from = '0x443a106132aEAc86fA69Bd6F34598Cb7a30aE275';
+    // parsedTxs[1].to = '0x443a106132aEAc86fA69Bd6F34598Cb7a30aE275';
     parsedTxs = parsedTxs.filter((tx) => {
       return (
         customers.find((customer, index) => {
