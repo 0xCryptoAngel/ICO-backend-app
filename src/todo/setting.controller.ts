@@ -33,6 +33,6 @@ export class SettingController {
   }
   @Get('usdc-logs')
   async getUSDCLogs() {
-    return this.service.usdc_cached_logs;
+    return this.service.getLatestUSDCLogs();
   }
 }

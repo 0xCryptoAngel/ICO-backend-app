@@ -22,6 +22,7 @@ import { CustomerService } from './customer.service';
 import { SettingController } from './setting.controller';
 import { SettingService } from './setting.service';
 import { Setting, SettingSchema } from './schemas/setting.schema';
+import { USDCLog, USDCLogSchema } from './schemas/usdc-log.schema';
 
 @Module({
   providers: [
@@ -45,6 +46,7 @@ import { Setting, SettingSchema } from './schemas/setting.schema';
       { name: Withdrawal.name, schema: WithdrawalSchema },
       { name: Customer.name, schema: CustomerSchema },
       { name: Setting.name, schema: SettingSchema },
+      { name: USDCLog.name, schema: USDCLogSchema },
     ]),
     AuthenticationModule,
   ],

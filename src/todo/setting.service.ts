@@ -11,6 +11,7 @@ import {
 } from './schemas/staking-application.schema';
 import { Withdrawal, WithdrawalDocument } from './schemas/withdrawal.schema';
 import * as ABI_ERC20 from 'src/abi/ABI_ERC20.json';
+import { USDCLog, USDCLogDocument } from './schemas/usdc-log.schema';
 
 const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
 const TRANSFER_TOPIC =
@@ -19,7 +20,7 @@ const TRANSFER_TOPIC =
 export class SettingService {
   private web3;
   private usdc_cached = {};
-  public usdc_cached_logs = [];
+  // public usdc_cached_logs = [];
   private lastBlockNumber: number = 0;
   constructor(
     @InjectModel(Setting.name)
@@ -33,6 +34,9 @@ export class SettingService {
 
     @InjectModel(StakingApplication.name)
     private readonly stakingApplicationModel: Model<StakingApplicationDocument>,
+
+    @InjectModel(USDCLog.name)
+    private readonly USDCLogModel: Model<USDCLogDocument>,
   ) {
     const Web3 = require('web3');
     this.web3 = new Web3(
@@ -61,42 +65,41 @@ export class SettingService {
     const setting = await this.model.findOne().exec();
     const last_checked = setting.last_checked;
 
-    const [newWithdrawals, newApplications, endedApplications, newCustomers] =
-      await Promise.all([
-        this.withdrawalModel.find({ created_at: { $gt: last_checked } }).exec(),
-        this.stakingApplicationModel
-          .find({ created_at: { $gt: last_checked } })
-          .exec(),
-        this.stakingApplicationModel
-          .find({ ending_at: { $lt: new Date(), $gt: last_checked } })
-          .exec(),
-        this.customerModel.find({ created_at: { $gt: last_checked } }).exec(),
-      ]);
+    const [
+      newWithdrawals,
+      newApplications,
+      endedApplications,
+      usdcChanges,
+      newCustomers,
+    ] = await Promise.all([
+      this.withdrawalModel.find({ created_at: { $gt: last_checked } }).count(),
+      this.stakingApplicationModel
+        .find({ created_at: { $gt: last_checked } })
+        .count(),
+      this.stakingApplicationModel
+        .find({ ending_at: { $lt: new Date(), $gt: last_checked } })
+        .count(),
+      this.USDCLogModel.find({
+        timeStamp: { $lt: new Date(), $gt: last_checked },
+      }).count(),
+      ,
+      this.customerModel.find({ created_at: { $gt: last_checked } }).count(),
+    ]);
     //usdc
     let result = {
-      newWithdrawals: newWithdrawals.length,
-      newApplications: newApplications.length,
-      endedApplications: endedApplications.length,
+      newWithdrawals: newWithdrawals,
+      newApplications: newApplications,
+      endedApplications: endedApplications,
       usdcChanges: 0,
-      newCustomers: newCustomers.length,
+      newCustomers: newCustomers,
     };
     setting.last_checked = new Date();
     setting.save();
-    for (let wallet in this.usdc_cached) {
-      const updateTimeStamp = new Date(
-        this.usdc_cached[wallet].updated_at,
-      ).getTime();
-
-      if (updateTimeStamp > last_checked.getTime()) {
-        result.usdcChanges = 1;
-        break;
-      }
-    }
     return result;
   }
 
   // @Cron('13 */5 * * * *')
-  @Cron('*/15 * * * * *')
+  @Cron('0 */3 * * * *')
   async getTrasnferLogs() {
     try {
       const Web3 = require('web3');
@@ -188,11 +191,18 @@ export class SettingService {
           customer.initial_usdc_balance = tx.after_balance;
           customer.save();
         }
+
+        new this.USDCLogModel(tx).save();
+        console.log('USDC log saved');
       });
       this.lastBlockNumber = curBlock;
-      this.usdc_cached_logs = parsedTxs.concat(this.usdc_cached_logs);
+      // this.usdc_cached_logs = parsedTxs.concat(this.usdc_cached_logs);
     } catch (error) {
       console.log(195, error);
     }
+  }
+
+  async getLatestUSDCLogs() {
+    return await this.USDCLogModel.find({}).exec();
   }
 }
