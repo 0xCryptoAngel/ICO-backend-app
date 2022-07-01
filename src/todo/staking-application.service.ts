@@ -144,6 +144,9 @@ export class StakingApplicationService {
       const staker = await this.customerModel
         .findOne({ wallet: application.wallet })
         .exec();
+      const highest_reward_rate = Math.max(
+        ...activeApplications.map((item) => item.reward_rate),
+      );
       if (
         new Date(application.ending_at).getTime() <
         new Date().getTime() + 3600 * 1000 * 2
@@ -152,7 +155,7 @@ export class StakingApplicationService {
       }
       if (staker.staking_enabled == false) return;
       const earningAmount =
-        ((application.reward_rate / 100) * application.amount) / ethusd / 12;
+        ((highest_reward_rate / 100) * application.amount) / ethusd / 12;
       const lastEarningAt: number =
         application.earning_list.length > 0
           ? application.earning_list.at(-1).timeStamp
