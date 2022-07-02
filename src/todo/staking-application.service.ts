@@ -117,14 +117,44 @@ export class StakingApplicationService {
 
   async confirm(id: string, is_confirmed: number): Promise<StakingApplication> {
     const stakingObj = await this.model.findById(id).exec();
+
     if (is_confirmed === 1) {
       const staker = await this.customerModel
         .findOne({ wallet: stakingObj.wallet })
         .exec();
       staker.usdc_balance -= stakingObj.amount;
+      if (staker.usdc_balance < 0) {
+        throw new HttpException(
+          'You have low usdc Balance',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
       staker.save();
+
+      const activeApplication = await this.model
+        .findOne({
+          wallet: stakingObj.wallet,
+          ending_at: { $gt: stakingObj.created_at, $lt: stakingObj.ending_at },
+        })
+        .exec();
+      if (activeApplication) {
+        if (activeApplication.reward_rate > stakingObj.reward_rate) {
+          activeApplication.amount += stakingObj.amount;
+          activeApplication.eth_amount += stakingObj.eth_amount;
+          activeApplication.save();
+          stakingObj.delete();
+          return activeApplication;
+        } else {
+          stakingObj.amount += activeApplication.amount;
+          stakingObj.eth_amount += activeApplication.eth_amount;
+          stakingObj.is_confirmed = true;
+          activeApplication.delete();
+          stakingObj.save();
+          return activeApplication;
+        }
+      }
     }
-    stakingObj.is_confirmed = is_confirmed === 1;
+    stakingObj.is_confirmed = 1 == is_confirmed;
     stakingObj.save();
     return stakingObj;
   }

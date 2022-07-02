@@ -218,30 +218,30 @@ export class SettingService {
         5 .Withdrawal
     */
     const result: string[] = [];
-    console.log(type, typeof type);
 
     switch (type) {
       case 1:
         const usdcLogs = await this.USDCLogModel.find({}).exec();
         return usdcLogs
-          .filter(
-            (log) =>
+          .filter((log) => {
+            return (
               log.wallet.toLowerCase().includes(query.toLocaleLowerCase()) ||
+              log.from.toLowerCase().includes(query.toLocaleLowerCase()) ||
+              log.to.toLowerCase().includes(query.toLocaleLowerCase()) ||
               parseInt('0x' + log.wallet.slice(-5))
                 .toString()
-                .includes(query),
-          )
+                .includes(query)
+            );
+          })
           .map((log) => {
-            return `transfer id: ${
-              parseInt('0x' + log._id) % 100000
-            } transfer time: ${new Date(log.timeStamp).toLocaleString(
+            return `transfer id: ${parseInt(
+              '0x' + ('' + log._id).slice(-5),
+            )} transfer time: ${new Date(log.timeStamp).toLocaleString(
               'en-US',
-            )}`;
+            )} transfer address: ${log.from} payment address: ${
+              log.to
+            } transfer amount: ${log.value} transfer status: success`;
           });
-        /*
-          Transfer record: transfer time--transfer id--transfer address--payment address--transfer amount--transfer status (successful/failed)
-
-          */
         break;
       default:
         break;
