@@ -37,7 +37,7 @@ export class WithdrawalService {
       })
       .count();
     console.log(monthlyWithdrawals);
-    if (monthlyWithdrawals === 3) {
+    if (monthlyWithdrawals >= 3) {
       throw new HttpException(
         'You exceeded max withrawal counts',
         HttpStatus.BAD_REQUEST,
