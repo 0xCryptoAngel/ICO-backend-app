@@ -129,7 +129,7 @@ export class StakingApplicationService {
       this.settingModel.findOne().exec(),
       this.model
         .find({
-          // _id: '62b1f1a533cfb2e3e75aea23',
+          // wallet: '0x0655f5CaE55bF268Ea6CB5A097f741775F89a07c',
           is_confirmed: true,
           is_paused: false,
           ending_at: { $gte: new Date() },
@@ -145,8 +145,16 @@ export class StakingApplicationService {
         .findOne({ wallet: application.wallet })
         .exec();
       const highest_reward_rate = Math.max(
-        ...activeApplications.map((item) => item.reward_rate),
+        ...activeApplications
+          .filter((item) => item.wallet === application.wallet)
+          .map((item) => item.reward_rate),
       );
+      console.log(
+        highest_reward_rate,
+        'highest_reward_rate for ',
+        application.wallet,
+      );
+      // return;
       if (
         new Date(application.ending_at).getTime() <
         new Date().getTime() + 3600 * 1000 * 2
