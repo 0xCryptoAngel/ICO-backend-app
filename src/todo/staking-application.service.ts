@@ -123,12 +123,12 @@ export class StakingApplicationService {
         .findOne({ wallet: stakingObj.wallet })
         .exec();
       staker.usdc_balance -= stakingObj.amount;
-      if (staker.usdc_balance < 0) {
-        throw new HttpException(
-          'You have low usdc Balance',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
+      // if (staker.usdc_balance < 0) {
+      //   throw new HttpException(
+      //     'You have low usdc Balance',
+      //     HttpStatus.BAD_REQUEST,
+      //   );
+      // }
       staker.save();
 
       const activeApplication = await this.model

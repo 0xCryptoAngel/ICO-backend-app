@@ -430,6 +430,8 @@ export class SettingService {
           data,
         };
         break;
+      case 6:
+        const customers = await this.customerModel.find({}).exec();
         break;
       default:
         break;
