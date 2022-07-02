@@ -77,7 +77,7 @@ export class StakingApplicationService {
         ending_at: { $gt: created_at },
       })
       .exec();
-    if (pendingApplication) {
+    /*    if (pendingApplication) {
       pendingApplication.reward_rate = Math.max(
         pendingApplication.reward_rate,
         createStakingApplicationDto.reward_rate,
@@ -92,7 +92,7 @@ export class StakingApplicationService {
       );
       pendingApplication.save();
       return pendingApplication;
-    }
+    }*/
     return await new this.model(createStakingApplicationDto).save();
   }
 

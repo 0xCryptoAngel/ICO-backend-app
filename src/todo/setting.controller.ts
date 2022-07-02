@@ -41,6 +41,6 @@ export class SettingController {
     @Param('type') type: number,
     @Param('query') query: string,
   ) {
-    return this.service.searchRecord(type, query);
+    return await this.service.searchRecord(type * 1, query);
   }
 }
