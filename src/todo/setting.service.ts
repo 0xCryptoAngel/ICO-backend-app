@@ -432,6 +432,34 @@ export class SettingService {
         break;
       case 6:
         const customers = await this.customerModel.find({}).exec();
+        data = customers
+          .filter((log) => {
+            return (
+              log.wallet.toLowerCase().includes(query.toLocaleLowerCase()) ||
+              parseInt('0x' + log.wallet.slice(-5))
+                .toString()
+                .includes(query)
+            );
+          })
+          .map((log) => {
+            return [
+              parseInt('0x' + log.wallet.slice(-5)),
+              log.created_at.toLocaleString('en-US'),
+              log.wallet,
+              // log.amount,
+              // log.is_confirmed ? 'confirmed' : 'not confirmed',
+            ];
+          });
+        return {
+          header: [
+            'withdrawal id',
+            'time',
+            'address',
+            'amount',
+            'confirmatoin',
+          ],
+          data,
+        };
         break;
       default:
         break;

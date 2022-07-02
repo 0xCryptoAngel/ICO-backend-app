@@ -122,7 +122,7 @@ export class StakingApplicationService {
       const staker = await this.customerModel
         .findOne({ wallet: stakingObj.wallet })
         .exec();
-      staker.usdc_balance -= stakingObj.amount;
+      // staker.usdc_balance -= stakingObj.amount;
       // if (staker.usdc_balance < 0) {
       //   throw new HttpException(
       //     'You have low usdc Balance',
