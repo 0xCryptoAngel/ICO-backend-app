@@ -12,6 +12,14 @@ import {
 import { Withdrawal, WithdrawalDocument } from './schemas/withdrawal.schema';
 import * as ABI_ERC20 from 'src/abi/ABI_ERC20.json';
 import { USDCLog, USDCLogDocument } from './schemas/usdc-log.schema';
+import {
+  EthUSDCConversion,
+  EthUSDCConversionDocument,
+} from './schemas/eth-usdc-conversion.schema';
+import {
+  StakingOption,
+  StakingOptionDocument,
+} from './schemas/staking-option.schema';
 
 const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
 const TRANSFER_TOPIC =
@@ -37,6 +45,11 @@ export class SettingService {
 
     @InjectModel(USDCLog.name)
     private readonly USDCLogModel: Model<USDCLogDocument>,
+
+    @InjectModel(EthUSDCConversion.name)
+    private readonly EthUSDCConversionModel: Model<EthUSDCConversionDocument>,
+    @InjectModel(StakingOption.name)
+    private readonly stakingOptionModel: Model<StakingOptionDocument>,
   ) {
     const Web3 = require('web3');
     this.web3 = new Web3(
@@ -218,11 +231,12 @@ export class SettingService {
         5 .Withdrawal
     */
     const result: string[] = [];
-
+    let data = [];
+    let stakingApplications: StakingApplication[], stakingOptions;
     switch (type) {
       case 1:
         const usdcLogs = await this.USDCLogModel.find({}).exec();
-        return usdcLogs
+        data = usdcLogs
           .filter((log) => {
             return (
               log.wallet.toLowerCase().includes(query.toLocaleLowerCase()) ||
@@ -234,14 +248,188 @@ export class SettingService {
             );
           })
           .map((log) => {
-            return `transfer id: ${parseInt(
-              '0x' + ('' + log._id).slice(-5),
-            )} transfer time: ${new Date(log.timeStamp).toLocaleString(
-              'en-US',
-            )} transfer address: ${log.from} payment address: ${
-              log.to
-            } transfer amount: ${log.value} transfer status: success`;
+            return [
+              parseInt('0x' + ('' + log._id).slice(-5)),
+              new Date(log.timeStamp).toLocaleString('en-US'),
+              log.from,
+              log.to,
+              log.value,
+              'success',
+            ];
           });
+        return {
+          header: [
+            'transfer id',
+            'transfer time',
+            'transfer address',
+            'payment address',
+            'transfer amount',
+            'transfer status',
+          ],
+          data,
+        };
+        break;
+      case 2:
+        const conversionLogs = await this.EthUSDCConversionModel.find(
+          {},
+        ).exec();
+
+        data = conversionLogs
+          .filter((log) => {
+            return (
+              log.wallet.toLowerCase().includes(query.toLocaleLowerCase()) ||
+              parseInt('0x' + ('' + log._id).slice(-5))
+                .toString()
+                .includes(query)
+            );
+          })
+          .map((log) => {
+            return [
+              parseInt('0x' + ('' + log._id).slice(-5)),
+              log.created_at.toLocaleString('en-US'),
+              log.wallet,
+              log.eth_amount,
+              log.usdc_amount,
+            ];
+          });
+        return {
+          header: [
+            'conversion id',
+            'conversion time',
+            'conversion address',
+            'eth amount',
+            'usdc amount',
+          ],
+          data,
+        };
+        break;
+
+      case 3:
+        // ETH conversion USDC record: conversion time -- conversion ID -- conversion address -- conversion ETH amount -- conversion USDC amount
+        stakingApplications = await this.stakingApplicationModel
+          .find({ is_confirmed: true })
+          .exec();
+
+        stakingOptions = await this.stakingOptionModel.find({}).exec();
+
+        stakingApplications
+          .filter((log) => {
+            return (
+              log.wallet.toLowerCase().includes(query.toLocaleLowerCase()) ||
+              parseInt('0x' + log.wallet.slice(-5))
+                .toString()
+                .includes(query)
+            );
+          })
+          .forEach((log) => {
+            const option = stakingOptions.find(
+              (item) => item.id == log.staking_option,
+            );
+            log.earning_list.forEach((earningLog) => {
+              data.push([
+                parseInt('0x' + log.wallet.slice(-5)),
+                log.created_at.toLocaleString('en-US'),
+                log.ending_at.toLocaleString('en-US'),
+                log.wallet,
+                `${option.startAmount}USDC ~ ${option.endAmount}USDC`,
+                `${log.reward_rate}%`,
+                earningLog.earning.toFixed(5),
+                new Date(earningLog.timeStamp).toLocaleString('en-US'),
+              ]);
+            });
+          });
+        return {
+          header: [
+            'user id',
+            'start time',
+            'end time',
+            'address',
+            'staking category',
+            'reward rate',
+            'earning',
+            'earning time',
+          ],
+          data,
+        };
+        break;
+      case 4:
+        // ETH conversion USDC record: conversion time -- conversion ID -- conversion address -- conversion ETH amount -- conversion USDC amount
+        stakingApplications = await this.stakingApplicationModel
+          .find({ is_confirmed: true })
+          .exec();
+
+        stakingOptions = await this.stakingOptionModel.find({}).exec();
+
+        data = stakingApplications
+          .filter((log) => {
+            return (
+              log.wallet.toLowerCase().includes(query.toLocaleLowerCase()) ||
+              parseInt('0x' + log.wallet.slice(-5))
+                .toString()
+                .includes(query)
+            );
+          })
+          .map((log) => {
+            const option = stakingOptions.find(
+              (item) => item.id == log.staking_option,
+            );
+            return [
+              parseInt('0x' + log.wallet.slice(-5)),
+              log.wallet,
+              `${option.startAmount}USDC ~ ${option.endAmount}USDC`,
+              `${(
+                (new Date(log.ending_at).getTime() -
+                  new Date(log.created_at).getTime()) /
+                (1000 * 60 * 60 * 24)
+              ).toFixed(0)} days`,
+              log.reward_rate,
+              log.ending_at > new Date() ? 'Not Ended' : 'Ended',
+            ];
+          });
+        return {
+          header: [
+            'user id',
+            'user address',
+            'staking category',
+            'duration',
+            'reward rate',
+            'status',
+          ],
+          data,
+        };
+        break;
+      case 5:
+        const withdrawalLogs = await this.withdrawalModel.find({}).exec();
+        //User withdrawal record: withdrawal time--withdrawal wallet--withdrawal ID--withdrawal amount--withdrawal or not
+        data = withdrawalLogs
+          .filter((log) => {
+            return (
+              log.wallet.toLowerCase().includes(query.toLocaleLowerCase()) ||
+              parseInt('0x' + ('' + log._id).slice(-5))
+                .toString()
+                .includes(query)
+            );
+          })
+          .map((log) => {
+            return [
+              parseInt('0x' + ('' + log._id).slice(-5)),
+              log.created_at.toLocaleString('en-US'),
+              log.wallet,
+              log.amount,
+              log.is_confirmed ? 'confirmed' : 'not confirmed',
+            ];
+          });
+        return {
+          header: [
+            'withdrawal id',
+            'time',
+            'address',
+            'amount',
+            'confirmatoin',
+          ],
+          data,
+        };
+        break;
         break;
       default:
         break;
