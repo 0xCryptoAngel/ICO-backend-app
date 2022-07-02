@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateWithdrawalDto, UpdateWithdrawalDto } from './dto/withdrawal.dto';
@@ -22,6 +27,23 @@ export class WithdrawalService {
   }
 
   async create(createWithdrawalDto: CreateWithdrawalDto): Promise<Withdrawal> {
+    const date = new Date();
+    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    const monthlyWithdrawals = await this.model
+      .find({
+        created_at: { $gt: firstDay },
+        is_confirmed: true,
+        wallet: createWithdrawalDto.wallet,
+      })
+      .count();
+    console.log(monthlyWithdrawals);
+    if (monthlyWithdrawals === 3) {
+      throw new HttpException(
+        'You exceeded max withrawal counts',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    // return;
     createWithdrawalDto.created_at = new Date();
     return await new this.model(createWithdrawalDto).save();
   }
