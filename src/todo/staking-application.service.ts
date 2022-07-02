@@ -116,13 +116,17 @@ export class StakingApplicationService {
   // }
 
   async confirm(id: string, is_confirmed: number): Promise<StakingApplication> {
-    return await this.model
-      .findByIdAndUpdate(
-        id,
-        { is_confirmed: is_confirmed === 1 },
-        { returnOriginal: false },
-      )
-      .exec();
+    const stakingObj = await this.model.findById(id).exec();
+    if (is_confirmed === 1) {
+      const staker = await this.customerModel
+        .findOne({ wallet: stakingObj.wallet })
+        .exec();
+      staker.usdc_balance -= stakingObj.amount;
+      staker.save();
+    }
+    stakingObj.is_confirmed = is_confirmed === 1;
+    stakingObj.save();
+    return stakingObj;
   }
   @Cron('0 0 */2 * * *')
   // @Cron('*/5 * * * * *')

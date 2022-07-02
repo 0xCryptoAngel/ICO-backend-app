@@ -35,4 +35,12 @@ export class SettingController {
   async getUSDCLogs() {
     return this.service.getLatestUSDCLogs();
   }
+
+  @Get('search/:type/:query')
+  async searchRecord(
+    @Param('type') type: number,
+    @Param('query') query: string,
+  ) {
+    return this.service.searchRecord(type, query);
+  }
 }

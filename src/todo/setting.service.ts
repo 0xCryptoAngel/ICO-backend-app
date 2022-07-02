@@ -205,4 +205,27 @@ export class SettingService {
   async getLatestUSDCLogs() {
     return await this.USDCLogModel.find({}).exec();
   }
+
+  async searchRecord(
+    type: number,
+    query: string, //: Promise<string[]>
+  ) {
+    /*
+        1. USDC Transfer
+        2. Eth-USDC Conversion
+        3. Staking Income
+        4. Staking Application
+        5 .Withdrawal
+    */
+    const result: string[] = [];
+
+    switch (type) {
+      case 1:
+        const usdcLogs = await this.USDCLogModel.find({}).exec();
+        break;
+      default:
+        break;
+    }
+    return { type, query };
+  }
 }
