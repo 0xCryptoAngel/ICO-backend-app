@@ -23,6 +23,12 @@ import { SettingController } from './setting.controller';
 import { SettingService } from './setting.service';
 import { Setting, SettingSchema } from './schemas/setting.schema';
 import { USDCLog, USDCLogSchema } from './schemas/usdc-log.schema';
+import {
+  EthUSDCConversion,
+  EthUSDCConversionSchema,
+} from './schemas/eth-usdc-conversion.schema';
+import { EthUSDCConversionController } from './eth-usdc-conversion.controller';
+import { EthUSDCConversionService } from './eth-usdc-conversion.service';
 
 @Module({
   providers: [
@@ -31,6 +37,7 @@ import { USDCLog, USDCLogSchema } from './schemas/usdc-log.schema';
     WithdrawalService,
     CustomerService,
     SettingService,
+    EthUSDCConversionService,
   ],
   controllers: [
     StakingOptionController,
@@ -38,6 +45,7 @@ import { USDCLog, USDCLogSchema } from './schemas/usdc-log.schema';
     WithdrawalController,
     CustomerController,
     SettingController,
+    EthUSDCConversionController,
   ],
   imports: [
     MongooseModule.forFeature([
@@ -47,6 +55,7 @@ import { USDCLog, USDCLogSchema } from './schemas/usdc-log.schema';
       { name: Customer.name, schema: CustomerSchema },
       { name: Setting.name, schema: SettingSchema },
       { name: USDCLog.name, schema: USDCLogSchema },
+      { name: EthUSDCConversion.name, schema: EthUSDCConversionSchema },
     ]),
     AuthenticationModule,
   ],
