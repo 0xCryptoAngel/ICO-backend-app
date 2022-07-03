@@ -8,7 +8,7 @@ export class Customer {
   @Prop({ required: true, index: true })
   wallet: string;
 
-  @Prop({ required: true, default: ' ' })
+  @Prop({ default: ' ' })
   note: string;
 
   @Prop({ required: true, default: 'ERC' })

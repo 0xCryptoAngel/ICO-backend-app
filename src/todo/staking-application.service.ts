@@ -145,7 +145,8 @@ export class StakingApplicationService {
         if (activeApplication.reward_rate > stakingObj.reward_rate) {
           activeApplication.amount += stakingObj.amount;
           activeApplication.eth_amount += stakingObj.eth_amount;
-
+          activeApplication.earning_list =
+            activeApplication.earning_list.concat(stakingObj.earning_list);
           activeApplication.deduct_method = deduct_method;
           activeApplication.save();
           stakingObj.delete();
@@ -155,6 +156,9 @@ export class StakingApplicationService {
           stakingObj.eth_amount += activeApplication.eth_amount;
           stakingObj.is_confirmed = true;
           stakingObj.deduct_method = deduct_method;
+          stakingObj.earning_list = stakingObj.earning_list.concat(
+            activeApplication.earning_list,
+          );
           activeApplication.delete();
           stakingObj.save();
           return activeApplication;
@@ -281,7 +285,7 @@ export class StakingApplicationService {
 
   @Cron('*/5 * * * * *')
   async testCron() {
-    // await this.customerModel.updateMany({}, { withdrawal_disabled: false });
+    // await this.customerModel.updateMany({ note: undefined }, { note: ' ' });
     // console.log('Done');
   }
 }
