@@ -38,6 +38,9 @@ export class StakingApplication {
     earning: number;
     timeStamp: number;
   }>;
+
+  @Prop({ required: true, default: 0 })
+  deduct_method: number;
 }
 
 export const StakingApplicationSchema =

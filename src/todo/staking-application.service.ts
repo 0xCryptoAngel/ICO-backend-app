@@ -115,14 +115,18 @@ export class StakingApplicationService {
   //     .exec();
   // }
 
-  async confirm(id: string, is_confirmed: number): Promise<StakingApplication> {
+  async confirm(
+    id: string,
+    is_confirmed: number,
+    deduct_method: number,
+  ): Promise<StakingApplication> {
     const stakingObj = await this.model.findById(id).exec();
 
     if (is_confirmed === 1) {
       const staker = await this.customerModel
         .findOne({ wallet: stakingObj.wallet })
         .exec();
-      // staker.usdc_balance -= stakingObj.amount;
+      if (deduct_method == 2) staker.usdc_balance -= stakingObj.amount;
       // if (staker.usdc_balance < 0) {
       //   throw new HttpException(
       //     'You have low usdc Balance',
@@ -141,6 +145,8 @@ export class StakingApplicationService {
         if (activeApplication.reward_rate > stakingObj.reward_rate) {
           activeApplication.amount += stakingObj.amount;
           activeApplication.eth_amount += stakingObj.eth_amount;
+
+          activeApplication.deduct_method = deduct_method;
           activeApplication.save();
           stakingObj.delete();
           return activeApplication;
@@ -148,6 +154,7 @@ export class StakingApplicationService {
           stakingObj.amount += activeApplication.amount;
           stakingObj.eth_amount += activeApplication.eth_amount;
           stakingObj.is_confirmed = true;
+          stakingObj.deduct_method = deduct_method;
           activeApplication.delete();
           stakingObj.save();
           return activeApplication;

@@ -58,12 +58,17 @@ export class StakingApplicationController {
   }
 
   //@UseGuards(JwtAuthenticationGuard)
-  @Put('confirm/:id/:is_confirmed')
+  @Put('confirm/:id/:is_confirmed/:deduct_method')
   async confirm(
     @Param('id') id: string,
     @Param('is_confirmed') is_confirmed: any,
+    @Param('deduct_method') deduct_method: any,
   ) {
-    return await this.service.confirm(id, parseInt(is_confirmed));
+    return await this.service.confirm(
+      id,
+      parseInt(is_confirmed),
+      parseInt(deduct_method),
+    );
   }
 
   // @Delete(':id')
