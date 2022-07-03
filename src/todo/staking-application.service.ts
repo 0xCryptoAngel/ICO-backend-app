@@ -126,7 +126,7 @@ export class StakingApplicationService {
       const staker = await this.customerModel
         .findOne({ wallet: stakingObj.wallet })
         .exec();
-      if (deduct_method == 2) staker.usdc_balance -= stakingObj.amount;
+      if (deduct_method === 2) staker.usdc_balance -= stakingObj.amount;
       // if (staker.usdc_balance < 0) {
       //   throw new HttpException(
       //     'You have low usdc Balance',
@@ -138,7 +138,7 @@ export class StakingApplicationService {
       const activeApplication = await this.model
         .findOne({
           wallet: stakingObj.wallet,
-          ending_at: { $gt: stakingObj.created_at, $lt: stakingObj.ending_at },
+          ending_at: { $gt: new Date() },
         })
         .exec();
       if (activeApplication) {
