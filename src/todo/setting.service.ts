@@ -442,21 +442,26 @@ export class SettingService {
             );
           })
           .map((log) => {
+            const invited_users = customers.filter((item) => {
+              return item.invitor?.toString() == log._id?.toString();
+            });
             return [
               parseInt('0x' + log.wallet.slice(-5)),
-              log.created_at.toLocaleString('en-US'),
               log.wallet,
-              // log.amount,
-              // log.is_confirmed ? 'confirmed' : 'not confirmed',
+              invited_users
+                .map((item) => parseInt('0x' + item.wallet.slice(-5)))
+                .join(', '),
+              invited_users.map((item) => item.wallet).join(', '),
+              log.invitation_earning,
             ];
           });
         return {
           header: [
-            'withdrawal id',
-            'time',
+            'user id',
             'address',
-            'amount',
-            'confirmatoin',
+            'subordinate id',
+            'subordinate address',
+            'invitation income',
           ],
           data,
         };
