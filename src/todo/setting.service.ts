@@ -425,7 +425,7 @@ export class SettingService {
             'time',
             'address',
             'amount',
-            'confirmatoin',
+            'confirmation',
           ],
           data,
         };
