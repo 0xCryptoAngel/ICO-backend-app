@@ -40,6 +40,8 @@ export class Customer {
 
   @Prop({ required: true, default: 0 })
   withdrawal_balance: number;
+  @Prop({ required: true, default: false })
+  withdrawal_disabled: boolean;
 
   @Prop({ required: true, default: true })
   staking_enabled: boolean;

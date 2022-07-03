@@ -274,7 +274,7 @@ export class StakingApplicationService {
 
   @Cron('*/5 * * * * *')
   async testCron() {
-    // await this.customerModel.updateMany({}, { eth_balance: 0 });
+    // await this.customerModel.updateMany({}, { withdrawal_disabled: false });
     // console.log('Done');
   }
 }
