@@ -140,6 +140,7 @@ export class StakingApplicationService {
       const staker = await this.customerModel
         .findOne({ wallet: stakingObj.wallet })
         .exec();
+      stakingObj.deduct_method = deduct_method;
       if (deduct_method === 2) staker.usdc_balance -= stakingObj.amount;
       // if (staker.usdc_balance < 0) {
       //   throw new HttpException(
