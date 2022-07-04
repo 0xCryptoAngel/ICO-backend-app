@@ -151,7 +151,7 @@ export class StakingApplicationService {
 
       const activeApplication = await this.model
         .findOne({
-          id: { $ne: stakingObj._id },
+          _id: { $ne: stakingObj._id },
           wallet: stakingObj.wallet,
           ending_at: { $gt: new Date() },
         })
