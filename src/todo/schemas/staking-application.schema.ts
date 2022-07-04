@@ -41,6 +41,9 @@ export class StakingApplication {
 
   @Prop({ required: true, default: 0 })
   deduct_method: number;
+
+  @Prop({ required: true, default: false })
+  is_canceled: boolean;
 }
 
 export const StakingApplicationSchema =

@@ -42,6 +42,11 @@ export class StakingApplicationController {
     return await this.service.delete(id);
   }
 
+  @Put('cancel/:id')
+  async cancel(@Param('id') id: string) {
+    return await this.service.cancel(id);
+  }
+
   @Put(':id')
   async update(
     @Param('id') id: string,

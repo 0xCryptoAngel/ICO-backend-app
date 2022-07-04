@@ -15,6 +15,8 @@ export class StakingApplicationDto {
     earning: number;
     timeStamp: number;
   }>;
+
+  is_canceled?: boolean;
 }
 
 export class CreateStakingApplicationDto extends StakingApplicationDto {}

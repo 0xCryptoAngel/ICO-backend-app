@@ -33,7 +33,7 @@ export class StakingApplicationService {
   }
 
   async findAll(): Promise<StakingApplication[]> {
-    return await this.model.find().exec();
+    return await this.model.find({ is_canceled: false }).exec();
   }
   async getApplicationByWallet(
     wallet: string,
@@ -109,6 +109,20 @@ export class StakingApplicationService {
   async delete(id: string): Promise<StakingApplication> {
     return await this.model.findByIdAndDelete(id).exec();
   }
+  async cancel(id: string): Promise<StakingApplication> {
+    return await this.model
+      .findByIdAndUpdate(
+        id,
+        {
+          is_canceled: true,
+        },
+        {
+          returnOriginal: false,
+        },
+      )
+      .exec();
+  }
+
   // async delete(id: string): Promise<StakingApplication> {
   //   return await this.model
   //     .findByIdAndUpdate(id, { deleted_at: new Date() })
@@ -137,6 +151,7 @@ export class StakingApplicationService {
 
       const activeApplication = await this.model
         .findOne({
+          id: { $ne: stakingObj._id },
           wallet: stakingObj.wallet,
           ending_at: { $gt: new Date() },
         })
@@ -285,7 +300,7 @@ export class StakingApplicationService {
 
   @Cron('*/5 * * * * *')
   async testCron() {
-    // await this.customerModel.updateMany({ note: undefined }, { note: ' ' });
+    // await this.model.updateMany({}, { is_canceled: false });
     // console.log('Done');
   }
 }
