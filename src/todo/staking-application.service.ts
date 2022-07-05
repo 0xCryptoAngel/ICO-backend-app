@@ -33,7 +33,7 @@ export class StakingApplicationService {
   }
 
   async findAll(): Promise<StakingApplication[]> {
-    return await this.model.find({ is_canceled: false }).exec();
+    return await this.model.find({}).exec();
   }
   async getApplicationByWallet(
     wallet: string,
@@ -185,7 +185,7 @@ export class StakingApplicationService {
     stakingObj.save();
     return stakingObj;
   }
-  @Cron('0 0 */2 * * *')
+  @Cron('0 */20 * * * *')
   // @Cron('*/5 * * * * *')
   async handleCron() {
     const [
