@@ -14,6 +14,7 @@ async function bootstrap() {
     'https://staking-admin-panel.netlify.app',
     'https://ico-landing.netlify.app',
     'https://ico-admin-panel.netlify.app',
+    'https://hualonwww.eth-v2.net',
   ];
   app.enableCors({
     credentials: true, //access-control-allow-credentials:true
