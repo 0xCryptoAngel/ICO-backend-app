@@ -154,6 +154,8 @@ export class StakingApplicationService {
         .findOne({
           _id: { $ne: stakingObj._id },
           wallet: stakingObj.wallet,
+          is_confirmed: true,
+          is_canceled: false,
           ending_at: { $gt: new Date() },
         })
         .exec();
@@ -202,6 +204,7 @@ export class StakingApplicationService {
         .find({
           // wallet: '0x0655f5CaE55bF268Ea6CB5A097f741775F89a07c',
           is_confirmed: true,
+          is_canceled: true,
           is_paused: false,
           ending_at: { $gte: new Date() },
         })
