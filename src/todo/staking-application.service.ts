@@ -204,7 +204,7 @@ export class StakingApplicationService {
         .find({
           // wallet: '0x0655f5CaE55bF268Ea6CB5A097f741775F89a07c',
           is_confirmed: true,
-          is_canceled: true,
+          is_canceled: false,
           is_paused: false,
           ending_at: { $gte: new Date() },
         })
