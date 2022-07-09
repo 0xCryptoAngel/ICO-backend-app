@@ -53,6 +53,7 @@ export class CustomerService {
     try {
       const createdUser = await new this.model({
         ...createCustomerDto,
+        created_at: new Date()
       }).save();
       let curInvitor = createCustomerDto.invitor;
       for (let i = 1; i < 4; i++) {
