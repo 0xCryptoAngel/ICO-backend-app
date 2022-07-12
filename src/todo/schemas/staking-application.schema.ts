@@ -44,6 +44,9 @@ export class StakingApplication {
 
   @Prop({ required: true, default: false })
   is_canceled: boolean;
+
+  @Prop({ required: true, default: false })
+  amount_returned: boolean;
 }
 
 export const StakingApplicationSchema =

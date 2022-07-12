@@ -231,8 +231,10 @@ export class StakingApplicationService {
       // return;
       if (
         new Date(application.ending_at).getTime() <
-        new Date().getTime() + 3600 * 1000 * 2
+          new Date().getTime() + 3600 * 1000 * 2 &&
+        !application.amount_returned
       ) {
+        application.amount_returned = true;
         staker.usdc_balance += application.amount;
       }
       if (staker.staking_enabled == false) return;

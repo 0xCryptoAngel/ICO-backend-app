@@ -17,6 +17,7 @@ export class StakingApplicationDto {
   }>;
 
   is_canceled?: boolean;
+  amount_returned?: boolean;
 }
 
 export class CreateStakingApplicationDto extends StakingApplicationDto {}
