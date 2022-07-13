@@ -121,7 +121,7 @@ export class SettingService {
       usdcChanges: 0,
       newCustomers: newCustomers,
     };
-    lastCheckUUID.datetime = new Date();
+    lastCheckUUID.datetime = new Date().getTime();
     setting.save();
     return result;
   }
