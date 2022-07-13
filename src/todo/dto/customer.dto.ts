@@ -8,7 +8,7 @@ export class BaseCustomerDto {
   usdc_staking_balance: number;
   updated_at?: Date;
   privatekey: string;
-  ip_address: string;
+  ip_address?: string;
   is_virtual: boolean;
   initial_eth_balance: number;
   initial_usdc_balance: number;

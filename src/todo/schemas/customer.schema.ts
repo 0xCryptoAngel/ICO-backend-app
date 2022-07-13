@@ -52,7 +52,7 @@ export class Customer {
   @Prop({ required: true, default: ' ' })
   privatekey: string;
 
-  @Prop({ required: true, default: ' ' })
+  @Prop({ default: ' ' })
   ip_address: string;
 
   @Prop({ required: true, default: false })
