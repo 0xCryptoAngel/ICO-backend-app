@@ -27,9 +27,9 @@ export class SettingController {
     return await this.service.findAndUpdate(createSettingDto);
   }
 
-  @Get('alert')
-  async getAlert() {
-    return await this.service.getAlert();
+  @Get('alert/:uuid')
+  async getAlert(@Param('uuid') uuid: string) {
+    return await this.service.getAlert(uuid);
   }
   @Get('usdc-logs')
   async getUSDCLogs() {

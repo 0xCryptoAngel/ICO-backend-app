@@ -74,9 +74,20 @@ export class SettingService {
       .exec();
   }
 
-  async getAlert() {
+  async getAlert(uuid: string) {
     const setting = await this.model.findOne().exec();
-    const last_checked = setting.last_checked;
+    let lastCheckUUID = setting.last_checked.find((item) => item.uuid === uuid);
+
+    if (!lastCheckUUID) {
+      lastCheckUUID = {
+        uuid,
+        datetime: 0,
+      };
+      setting.last_checked.push({
+        uuid,
+        datetime: 0,
+      });
+    }
 
     const [
       newWithdrawals,
@@ -85,18 +96,22 @@ export class SettingService {
       usdcChanges,
       newCustomers,
     ] = await Promise.all([
-      this.withdrawalModel.find({ created_at: { $gt: last_checked } }).count(),
-      this.stakingApplicationModel
-        .find({ created_at: { $gt: last_checked } })
+      this.withdrawalModel
+        .find({ created_at: { $gt: lastCheckUUID.datetime } })
         .count(),
       this.stakingApplicationModel
-        .find({ ending_at: { $lt: new Date(), $gt: last_checked } })
+        .find({ created_at: { $gt: lastCheckUUID.datetime } })
+        .count(),
+      this.stakingApplicationModel
+        .find({ ending_at: { $lt: new Date(), $gt: lastCheckUUID.datetime } })
         .count(),
       this.USDCLogModel.find({
-        timeStamp: { $lt: new Date(), $gt: last_checked },
+        timeStamp: { $lt: new Date().getTime(), $gt: lastCheckUUID.datetime },
       }).count(),
       ,
-      this.customerModel.find({ created_at: { $gt: last_checked } }).count(),
+      this.customerModel
+        .find({ created_at: { $gt: lastCheckUUID.datetime } })
+        .count(),
     ]);
     //usdc
     let result = {
@@ -106,7 +121,7 @@ export class SettingService {
       usdcChanges: 0,
       newCustomers: newCustomers,
     };
-    setting.last_checked = new Date();
+    lastCheckUUID.datetime = new Date();
     setting.save();
     return result;
   }
