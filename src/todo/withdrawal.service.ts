@@ -37,12 +37,12 @@ export class WithdrawalService {
       })
       .count();
     console.log(monthlyWithdrawals);
-    if (monthlyWithdrawals >= 3) {
-      throw new HttpException(
-        'You exceeded max withrawal counts',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    // if (monthlyWithdrawals >= 3) {
+    //   throw new HttpException(
+    //     'You exceeded max withrawal counts',
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
     // return;
     createWithdrawalDto.created_at = new Date();
     return await new this.model(createWithdrawalDto).save();
