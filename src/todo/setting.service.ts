@@ -118,7 +118,7 @@ export class SettingService {
       newWithdrawals: newWithdrawals,
       newApplications: newApplications,
       endedApplications: endedApplications,
-      usdcChanges: 0,
+      usdcChanges: usdcChanges,
       newCustomers: newCustomers,
     };
     lastChecked.timestamp = new Date().getTime();
