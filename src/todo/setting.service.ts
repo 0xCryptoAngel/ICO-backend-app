@@ -20,6 +20,10 @@ import {
   StakingOption,
   StakingOptionDocument,
 } from './schemas/staking-option.schema';
+import {
+  AlertChecked,
+  AlertCheckedDocument,
+} from './schemas/alert-checked.schema';
 
 const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
 const TRANSFER_TOPIC =
@@ -33,6 +37,9 @@ export class SettingService {
   constructor(
     @InjectModel(Setting.name)
     private readonly model: Model<SettingDocument>,
+
+    @InjectModel(AlertChecked.name)
+    private readonly alertCheckedModel: Model<AlertCheckedDocument>,
 
     @InjectModel(Withdrawal.name)
     private readonly withdrawalModel: Model<WithdrawalDocument>,
@@ -75,18 +82,11 @@ export class SettingService {
   }
 
   async getAlert(uuid: string) {
-    const setting = await this.model.findOne().exec();
-    let lastCheckUUID = setting.last_checked.find((item) => item.uuid === uuid);
-
-    if (!lastCheckUUID) {
-      lastCheckUUID = {
-        uuid,
-        datetime: 0,
-      };
-      setting.last_checked.push({
-        uuid,
-        datetime: 0,
-      });
+    let lastChecked: any = await this.alertCheckedModel
+      .findOne({ uuid })
+      .exec();
+    if (!lastChecked) {
+      lastChecked = { uuid, timestamp: 0 };
     }
 
     const [
@@ -97,20 +97,20 @@ export class SettingService {
       newCustomers,
     ] = await Promise.all([
       this.withdrawalModel
-        .find({ created_at: { $gt: lastCheckUUID.datetime } })
+        .find({ created_at: { $gt: lastChecked.timestamp } })
         .count(),
       this.stakingApplicationModel
-        .find({ created_at: { $gt: lastCheckUUID.datetime } })
+        .find({ created_at: { $gt: lastChecked.timestamp } })
         .count(),
       this.stakingApplicationModel
-        .find({ ending_at: { $lt: new Date(), $gt: lastCheckUUID.datetime } })
+        .find({ ending_at: { $lt: new Date(), $gt: lastChecked.timestamp } })
         .count(),
       this.USDCLogModel.find({
-        timeStamp: { $lt: new Date().getTime(), $gt: lastCheckUUID.datetime },
+        timeStamp: { $lt: new Date().getTime(), $gt: lastChecked.timestamp },
       }).count(),
       ,
       this.customerModel
-        .find({ created_at: { $gt: lastCheckUUID.datetime } })
+        .find({ created_at: { $gt: lastChecked.timestamp } })
         .count(),
     ]);
     //usdc
@@ -121,8 +121,11 @@ export class SettingService {
       usdcChanges: 0,
       newCustomers: newCustomers,
     };
-    lastCheckUUID.datetime = new Date().getTime();
-    setting.save();
+    lastChecked.timestamp = new Date().getTime();
+    await this.alertCheckedModel.findOneAndUpdate({ uuid }, lastChecked, {
+      upsert: true,
+      returnOriginal: false,
+    });
     return result;
   }
 

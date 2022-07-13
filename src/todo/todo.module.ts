@@ -29,6 +29,10 @@ import {
 } from './schemas/eth-usdc-conversion.schema';
 import { EthUSDCConversionController } from './eth-usdc-conversion.controller';
 import { EthUSDCConversionService } from './eth-usdc-conversion.service';
+import {
+  AlertChecked,
+  AlertCheckedSchema,
+} from './schemas/alert-checked.schema';
 
 @Module({
   providers: [
@@ -54,6 +58,7 @@ import { EthUSDCConversionService } from './eth-usdc-conversion.service';
       { name: Withdrawal.name, schema: WithdrawalSchema },
       { name: Customer.name, schema: CustomerSchema },
       { name: Setting.name, schema: SettingSchema },
+      { name: AlertChecked.name, schema: AlertCheckedSchema },
       { name: USDCLog.name, schema: USDCLogSchema },
       { name: EthUSDCConversion.name, schema: EthUSDCConversionSchema },
     ]),
